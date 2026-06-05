@@ -83,7 +83,6 @@
             color: var(--text-muted);
         }
 
-        /* Поля ввода цифр */
         .input-field {
             width: 100%;
             background-color: var(--input-bg);
@@ -248,31 +247,31 @@
     </div>
 
     <script>
-        const COOP_FIXED_RATE = 10; 
+        var priceInput = document.getElementById("price");
+        var dpInput = document.getElementById("down-payment");
+        var termInput = document.getElementById("term");
+        var bankRateInput = document.getElementById("bank-rate");
+        var dpRubHint = document.getElementById("dp-rub-hint");
 
-        const priceInput = document.getElementById('price');
-        const dpInput = document.getElementById('down-payment');
-        const termInput = document.getElementById('term');
-        const bankRateInput = document.getElementById('bank-rate');
-        const dpRubHint = document.getElementById('dp-rub-hint');
-
-        const coopPaymentOut = document.getElementById('coop-payment');
-        const coopOverpaymentOut = document.getElementById('coop-overpayment');
-        const bankPaymentOut = document.getElementById('bank-payment');
-        const bankOverpaymentOut = document.getElementById('bank-overpayment');
-        const totalSavingOut = document.getElementById('total-saving');
+        var coopPaymentOut = document.getElementById("coop-payment");
+        var coopOverpaymentOut = document.getElementById("coop-overpayment");
+        var bankPaymentOut = document.getElementById("bank-payment");
+        var bankOverpaymentOut = document.getElementById("bank-overpayment");
+        var totalSavingOut = document.getElementById("total-saving");
 
         function calculateAnnuity(principal, annualRate, years) {
             if (principal <= 0 || years <= 0) return 0;
-            const monthlyRate = annualRate / 12 / 100;
-            const totalMonths = years * 12;
+            var monthlyRate = annualRate / 12 / 100;
+            var totalMonths = years * 12;
             if (monthlyRate === 0) return principal / totalMonths;
             return principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
         }
 
         function updateCalculator() {
-            const price = parseFloat(priceInput.value) || 0;
-            const dpPercent = parseFloat(dpInput.value) || 0;
-            const termYears = parseFloat(termInput.value) || 0;
-            const bankRate = parseFloat(bankRateInput.value) || 0;
+            var price = parseFloat(priceInput.value) || 0;
+            var dpPercent = parseFloat(dpInput.value) || 0;
+            var termYears = parseFloat(termInput.value) || 0;
+            var bankRate = parseFloat(bankRateInput.value) || 0;
 
+            var downPaymentAmount = price * (dpPercent / 100);
+            var loanAmount = price - downPaymentAmount;
