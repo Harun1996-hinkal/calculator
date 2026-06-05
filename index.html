@@ -53,7 +53,7 @@
             gap: 30px;
         }
 
-        max-width: 900px {
+        @media (max-width: 900px) {
             .calc-container { grid-template-columns: 1fr; }
         }
 
@@ -111,7 +111,7 @@
             margin-bottom: 30px;
         }
 
-        max-width: 550px {
+        @media (max-width: 550px) {
             .compare-grid { grid-template-columns: 1fr; }
         }
 
@@ -145,10 +145,7 @@
         .total-benefit-box {
             background: linear-gradient(135deg, #064e3b 0%, #111827 100%);
             border-radius: 12px;
-            padding:
-
-
-;
+            padding: 25px;
             text-align: center;
             border: 1px solid var(--accent-green);
         }
@@ -225,7 +222,7 @@
                     <!-- Банк -->
                     <div class="card bank-card">
                         <h4>Ипотека в банке</h4>
-                        <div class="badge-bank">Обычный расчет</div>
+                        <div class="badge-bank" id="bank-badge-rate">Ставка 22%</div>
                         <div class="card-metrics">
                             <div class="metric">
                                 <span>Ежемесячный платеж:</span>
@@ -238,7 +235,18 @@
                         </div>
                     </div>
                 </div>
-                <script>
+
+                <!-- Блок общей выгоды -->
+                <div class="total-benefit-box">
+                    <h3>Ваша чистая выгода</h3>
+                    <div class="benefit-amount" id="total-saving">0 ₽</div>
+                    <p class="benefit-note">Вы сохраняете эти деньги, не переплачивая проценты банку.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
         var priceInput = document.getElementById("price");
         var dpInput = document.getElementById("down-payment");
         var termInput = document.getElementById("term");
@@ -249,7 +257,12 @@
         var coopOverpaymentOut = document.getElementById("coop-overpayment");
         var bankPaymentOut = document.getElementById("bank-payment");
         var bankOverpaymentOut = document.getElementById("bank-overpayment");
+        var bankBadgeRate = document.getElementById("bank-badge-rate");
         var totalSavingOut = document.getElementById("total-saving");
+
+        function formatCurrency(value) {
+            return Math.round(value).toLocaleString('ru-RU') + " ₽";
+        }
 
         function calculateAnnuity(principal, annualRate, years) {
             if (principal <= 0 || years <= 0) return 0;
@@ -258,11 +271,8 @@
             if (monthlyRate === 0) return principal / totalMonths;
             return principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
         }
+
         function updateCalculator() {
             var price = parseFloat(priceInput.value) || 0;
             var dpPercent = parseFloat(dpInput.value) || 0;
             var termYears = parseFloat(termInput.value) || 0;
-            var bankRate = parseFloat(bankRateInput.value) || 0;
-
-            var downPaymentAmount = price * (dpPercent / 100);
-            var loanAmount = price - downPaymentAmount;
