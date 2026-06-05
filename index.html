@@ -3,102 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор риска изоляции пожилого человека</title>
+    <title>Калькулятор: Кооператив vs Банк</title>
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #f4f4f4;
-            border-radius: 10px;
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-coop: #10b981;
+            --accent-bank: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .calculator-container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+
         h2 {
             text-align: center;
-            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 1.5rem;
         }
-        .slider-container {
+
+        .input-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .label-val {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .label-val span:last-child {
+            color: var(--text-main);
             font-weight: bold;
         }
+
         input[type="range"] {
             width: 100%;
+            margin-top: 5px;
+            accent-color: var(--accent-bank);
         }
-        .value {
-            font-size: 0.9em;
-            color: #666;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            font-size: 1.1em;
-            text-align: center;
+
+        .fixed-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-coop);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
             font-weight: bold;
         }
-        .high { color: #e74c3c; }
-        .medium { color: #f39c12; }
-        .low { color: #27ae60; }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .card.coop { border-top: 4px solid var(--accent-coop); }
+        .card.bank { border-top: 4px solid var(--accent-bank); }
+
+        .card h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .res-row {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .res-row strong {
+            display: block;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+
+        .savings-block {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
+            border: 1px solid var(--accent-coop);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .savings-block p {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .savings-block .amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #22c55e;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <h2>Калькулятор риска социальной изоляции</h2>
-    <p style="text-align:center; font-size:0.9em; color:#555;">Оцените три ключевых блока</p>
 
-    <div class="slider-container">
-        <label>Физическое здоровье (1 – плохо, 10 – отлично): <span id="healthVal" class="value">5</span></label>
-        <input type="range" id="health" min="1" max="10" value="5" oninput="updateCalc()">
+<div class="calculator-container">
+    <h2>Сравнение: Кооператив vs Банк</h2>
+
+    <!-- Стоимость недвижимости -->
+    <div class="input-group">
+        <div class="label-val">
+            <span>Стоимость недвижимости:</span>
+            <span id="priceVal">5 000 000 ₽</span>
+        </div>
+        <input type=
+
+
+e" id="price" min="1000000" max="30000000" step="100000" value="5000000">
     </div>
 
-    <div class="slider-container">
-        <label>Психологическое состояние (1 – тяжелое, 10 – стабильное): <span id="psychoVal" class="value">5</span></label>
-        <input type="range" id="psycho" min="1" max="10" value="5" oninput="updateCalc()">
+    <!-- Первоначальный взнос -->
+    <div class="input-group">
+        <div class="label-val">
+            <span>Первоначальный взнос (30%):</span>
+            <span id="depositVal">1 500 000 ₽</span>
+        </div>
     </div>
 
-    <div class="slider-container">
-        <label>Социальные контакты (1 – нет общения, 10 – активные связи): <span id="socialVal" class="value">5</span></label>
-        <input type="range" id="social" min="1" max="10" value="5" oninput="updateCalc()">
+    <!-- Срок -->
+    <div class="input-group">
+        <div class="label-val">
+            <span>Срок рассрочки / кредита:</span>
+            <span id="termVal">10 лет</span>
+        </div>
+        <input type="range" id="term" min="1" max="30" step="1" value="10">
     </div>
 
-    <div id="result">Риск: средний</div>
+    <!-- Ставка Кооператива (Фиксированная) -->
+    <div class="input-group">
+        <div class="label-val">
+            <span>Ставка кооператива социальных программ:</span>
+            <span class="fixed-badge">10% годовых</span>
+        </div>
+    </div>
 
-    <script>
-        function updateCalc() {
-            const health = parseInt(document.getElementById('health').value);
-            const psycho = parseInt(document.getElementById('psycho').value);
-            const social = parseInt(document.getElementById('social').value);
+    <!-- Ставка Банка (Регулируемая) -->
+    <div class="input-group">
+        <div class="label-val">
+            <span>Процентная ставка банка:</span>
+            <span id="bankRateVal">15% годовых</span>
+        </div>
+        <input type="range" id="bankRate" min="5" max="30" step="0.5" value="15">
+    </div>
 
-            document.getElementById('healthVal').innerText = health;
-            document.getElementById('psychoVal').innerText = psycho;
-            document.getElementById('socialVal').innerText = social;
+    <!-- Результаты вычислений -->
+    <div class="results-grid">
+        <!-- Кооператив -->
+        <div class="card coop">
+            <h3>Кооператив (10%)</h3>
+            <div class="res-row">Ежемесячный платеж:<strong id="coopPayment">0 ₽</strong></div>
+            <div class="res-row">Переплата:<strong id="coopOverpayment">0 ₽</strong></div>
+            <div class="res-row">Всего выплат:<strong id="coopTotal">0 ₽</strong></div>
+        </div>
 
-            // Базовый расчет: чем меньше сумма, тем выше риск
-            const total = health + psycho + social;
-            let level, cssClass;
-            if (total <= 12) {
-                level = 'Высокий риск изоляции';
-                cssClass = 'high';
-            } else if (total <= 21) {
-                level = 'Умеренный риск';
-                cssClass = 'medium';
-            } else {
-                level = 'Низкий риск';
-                cssClass = 'low';
-            }
+        <!-- Банк -->
+        <div class="card bank">
+            <h3>Банк</h3>
+            <div class="res-row">Ежемесячный платеж:<strong id="bankPayment">0 ₽</strong></div>
+            <div class="res-row">Переплата:<strong id="bankOverpayment">0 ₽</strong></div>
+            <div class="res-row">Всего выплат:<strong id="bankTotal">0 ₽</strong></div>
+        </div>
 
-            const resultDiv = document.getElementById('result');
-            resultDiv.textContent = `Риск: ${level}`;
-            resultDiv.className = cssClass;
+        <!-- Разница / Выгода -->
+        <div class="savings-block">
+            <p>Ваша выгода при выборе Кооператива:</p>
+            <div class="amount" id="savings">0 ₽</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const priceInput = document.getElementById('price');
+    const termInput = document.getElementById('term');
+    const bankRateInput = document.getElementById('bankRate');
+
+    const priceVal = document.getElementById('priceVal');
+    const depositVal = document.getElementById('depositVal');
+    const termVal = document.getElementById('termVal');
+    const bankRateVal = document.getElementById('bankRateVal');
+
+    const coopPayment = document.getElementById('coopPayment');
+    const coopOverpayment = document.getElementById('coopOverpayment');
+    const coopTotal = document.getElementById('coopTotal');
+
+    const bankPayment = document.getElementById('bankPayment');
+    const bankOverpayment = document.getElementById('bankOverpayment');
+    const bankTotal = document.getElementById('bankTotal');
+    const savings = document.getElementById('savings');
+
+    function formatMoney(num) {
+        return Math.round(num).toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function calculate() {
+        const price = parseFloat(priceInput.value);
+        const termYears = parseInt(termInput.value);
+        const termMonths = termYears * 12;
+        const bankRate = parseFloat(bankRateInput.value) / 100 / 12;
+        const coopRate = 0.10 / 12; // Фиксированная ставка кооператива 10%
+
+        // Расчет первоначального взноса (30%) и суммы займа
+        const deposit = price * 0.30;
+        const loanAmount = price - deposit;
+
+        // Обновление текстовых меток интерфейса
+        priceVal.innerText = formatMoney(price);
+        depositVal.innerText = formatMoney(deposit);
+        termVal.innerText = `${termYears} ${termYears === 1 ? 'год' : termYears < 5 ? 'года' : 'лет'}`;
+        bankRateVal.innerText = `${bankRateInput.value}% годовых`;
+
+        // Расчет аннуитета для Банка
+        const bankMonthly = loanAmount * (bankRate * Math.pow(1 + bankRate, termMon
+
+
+ths)) / (Math.pow(1 + bankRate, termMonths) - 1);
+        const bankTotalPay = bankMonthly * termMonths;
+        const bankOverpay = bankTotalPay - loanAmount;
+
+        // Расчет аннуитета для Кооператива
+        const coopMonthly = loanAmount * (coopRate * Math.pow(1 + coopRate, termMonths)) / (Math.pow(1 + coopRate, termMonths) - 1);
+        const coopTotalPay = coopMonthly * termMonths;
+        const coopOverpay = coopTotalPay - loanAmount;
+
+        // Расчет чистой выгоды
+        const totalSavings = bankTotalPay - coopTotalPay;
+
+        // Вывод результатов на экран
+        coopPayment.innerText = formatMoney(coopMonthly);
+        coopOverpayment.innerText = formatMoney(coopOverpay);
+        coopTotal.innerText = formatMoney(coopTotalPay);
+
+        bankPayment.innerText = formatMoney(bankMonthly);
+        bankOverpayment.innerText = formatMoney(bankOverpay);
+        bankTotal.innerText = formatMoney(bankTotalPay);
+
+        if (totalSavings > 0) {
+            savings.innerText = formatMoney(totalSavings);
+            savings.style.color = '#22c55e';
+        } else {
+            savings.innerText = formatMoney(Math.abs(totalSavings)) + ' (выгоднее Банк)';
+            savings.style.color = '#ef4444';
         }
+    }
 
-        // Инициализация
-        updateCalc();
-    </script>
+    // Слушатели изменения ползунков
+    priceInput.addEventListener('input', calculate);
+    termInput.addEventListener('input', calculate);
+    bankRateInput.addEventListener('input', calculate);
+
+    // Первичный запуск расчета при загрузке страницы
+    calculate();
+</script>
+
 </body>
-</html>
+</html>"rang
