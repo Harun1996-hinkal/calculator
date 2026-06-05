@@ -64,7 +64,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        .inputs-side h3 {
+        .inputs-side h3, .results-side h3 {
             margin-top: 0;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
@@ -150,7 +150,7 @@
             border: 1px solid var(--accent-green);
         }
 
-        .total-benefit-box h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-muted); }
+        .total-benefit-box h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-muted); border: none; padding: 0; }
         .benefit-amount { font-size: 2.2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 8px; }
         .benefit-note { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
         
@@ -166,7 +166,7 @@
         </header>
 
         <div class="calc-container">
-            <!-- Левая колонка -->
+            <!-- Левая колонка (Ввод данных) -->
             <div class="calc-block inputs-side">
                 <h3>Параметры недвижимости</h3>
                 
@@ -200,45 +200,43 @@
                 </div>
             </div>
 
-            <!-- Правая колонка -->
+            <!-- Правая колонка (Результаты) -->
             <div class="calc-block results-side">
+                <h3>Результаты расчета</h3>
+                
                 <div class="compare-grid">
-                    <!-- Кооператив -->
+                    <!-- Карточка Кооператива -->
                     <div class="card coop-card">
                         <h4>Кооператив</h4>
-                        <div class="badge">Ставка 10% фиксирована</div>
-                        <div class="card-metrics">
-                            <div class="metric">
-                                <span>Ежемесячный платеж:</span>
-                                <strong id="coop-payment">0 ₽</strong>
-                            </div>
-                            <div class="metric">
-                                <span>Общая переплата:</span>
-                                <strong id="coop-overpayment">0 ₽</strong>
-                            </div>
+                        <span class="badge">Ставка 10% фиксированная</span>
+                        <div class="metric">
+                            <span>Ежемесячный платеж</span>
+                            <strong id="coop-payment">0 ₽</strong>
+                        </div>
+                        <div class="metric">
+                            <span>Переплата по %</span>
+                            <strong id="coop-overpayment">0 ₽</strong>
                         </div>
                     </div>
 
-                    <!-- Банк -->
+                    <!-- Карточка Банка -->
                     <div class="card bank-card">
-                        <h4>Ипотека в банке</h4>
-                        <div class="badge-bank" id="bank-badge-rate">Ставка 22%</div>
-                        <div class="card-metrics">
-                            <div class="metric">
-                                <span>Ежемесячный платеж:</span>
-                                <strong id="bank-payment">0 ₽</strong>
-                            </div>
-                            <div class="metric">
-                                <span>Общая переплата:</span>
-                                <strong id="bank-overpayment">0 ₽</strong>
-                            </div>
+                        <h4>Коммерческий банк</h4>
+                        <span class="badge-bank" id="bank-badge-rate">Ставка 22%</span>
+                        <div class="metric">
+                            <span>Ежемесячный платеж</span>
+                            <strong id="bank-payment">0 ₽</strong>
+                        </div>
+                        <div class="metric">
+                            <span>Переплата по %</span>
+                            <strong id="bank-overpayment">0 ₽</strong>
                         </div>
                     </div>
                 </div>
 
                 <!-- Блок общей выгоды -->
                 <div class="total-benefit-box">
-                    <h3>Ваша чистая выгода</h3>
+                    <h3>Ваша общая выгода</h3>
                     <div class="benefit-amount" id="total-saving">0 ₽</div>
                     <p class="benefit-note">Вы сохраняете эти деньги, не переплачивая проценты банку.</p>
                 </div>
@@ -247,12 +245,14 @@
     </div>
 
     <script>
+        // Элементы ввода
         var priceInput = document.getElementById("price");
         var dpInput = document.getElementById("down-payment");
         var termInput = document.getElementById("term");
         var bankRateInput = document.getElementById("bank-rate");
         var dpRubHint = document.getElementById("dp-rub-hint");
 
+        // Элементы вывода
         var coopPaymentOut = document.getElementById("coop-payment");
         var coopOverpaymentOut = document.getElementById("coop-overpayment");
         var bankPaymentOut = document.getElementById("bank-payment");
