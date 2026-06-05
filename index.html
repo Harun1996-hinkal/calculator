@@ -3,307 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор: Кооператив vs Банк</title>
+    <title>Финансовый калькулятор: Кооператив vs Банк</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-coop: #10b981;
-            --accent-bank: #3b82f6;
-            --text-main: #f8fafc;
+            --bg-dark: #121824;
+            --card-bg: #1e2640;
+            --text-main: #ffffff;
             --text-muted: #94a3b8;
-            --border-color: #334155;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f59e0b;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
 
-        .calculator-container {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
+        .calc-wrapper {
             width: 100%;
-            max-width: 600px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
+            max-width: 1100px;
         }
 
-        h2 {
+        .calc-header {
             text-align: center;
-            margin-bottom: 25px;
-            font-weight: 600;
-            font-size: 1.5rem;
+            margin-bottom: 30px;
         }
 
-        .input-group {
-            margin-bottom: 20px;
+        .calc-header h2 {
+            font-size: 2rem;
+            margin-bottom: 5px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
+        .calc-header p {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            margin: 0;
         }
 
-        .label-val {
+        .calc-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+        }
+
+        max-width: 900px {
+            .calc-container { grid-template-columns: 1fr; }
+        }
+
+        .calc-block {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .inputs-side h3 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #2e3a5f;
+            padding-bottom: 10px;
+        }
+
+        .input-box {
+            margin-bottom: 25px;
+        }
+
+        .label-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
         }
 
-        .label-val span:last-child {
+        .value-display {
             color: var(--text-main);
-            font-weight: bold;
+            font-weight: 600;
+        }
+
+        .accent-color {
+            color: var(--accent-orange);
         }
 
         input[type="range"] {
             width: 100%;
-            margin-top: 5px;
-            accent-color: var(--accent-bank);
+            -webkit-appearance: none;
+            background: #2e3a5f;
+            height: 6px;
+            border-radius: 5px;
+            outline: none;
         }
 
-        .fixed-badge {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent-coop);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            transition: transform 0.1s;
         }
 
-        .results-grid {
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .bank-rate-box input[type="range"]::-webkit-slider-thumb {
+            background: var(--accent-orange);
+        }
+
+        .compare-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        max-width: 550px {
+            .compare-grid { grid-template-columns: 1fr; }
         }
 
         .card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-color);
-            padding: 15px;
+            background: #151b30;
             border-radius: 12px;
-        }
-
-        .card.coop { border-top: 4px solid var(--accent-coop); }
-        .card.bank { border-top: 4px solid var(--accent-bank); }
-
-        .card h3 {
-            font-size: 1rem;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-        }
-
-        .res-row {
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .res-row strong {
-            display: block;
-            color: var(--text-main);
-            font-size: 1.1rem;
-            margin-top: 2px;
-        }
-
-        .savings-block {
-            grid-column: span 2;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
-            border: 1px solid var(--accent-coop);
             padding: 20px;
+            border: 1px solid #252f52;
+        }
+
+        .coop-card { border-top: 4px solid var(--accent-green); }
+        .bank-card { border-top: 4px solid var(--accent-orange); }
+
+        .card h4 { margin: 0 0 5px 0; font-size: 1.2rem; }
+
+        .badge, .badge-bank {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .badge { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+        .badge-bank { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
+
+        .metric { margin-bottom: 12px; }
+        .metric span { display: block; font-size: 0.85rem
+
+
+color: var(--text-muted); margin-bottom: 2px; }
+        .metric strong { font-size: 1.15rem; }
+
+        .total-benefit-box {
+            background: linear-gradient(135deg, #064e3b 0%, #111827 100%);
             border-radius: 12px;
+            padding: 25px;
             text-align: center;
-            margin-top: 10px;
+            border: 1px solid var(--accent-green);
         }
 
-        .savings-block p {
-            font-size: 1rem;
-            color: var(--text-muted);
-        }
-
-        .savings-block .amount {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #22c55e;
-            margin-top: 5px;
-        }
+        .total-benefit-box h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-muted); }
+        .benefit-amount { font-size: 2.2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 8px; }
+        .benefit-note { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
-<div class="calculator-container">
-    <h2>Сравнение: Кооператив vs Банк</h2>
+    <div class="calc-wrapper">
+        <header class="calc-header">
+            <h2>Сравнение выгоды программы</h2>
+            <p>Условия кооператива зафиксированы под 10% годовых</p>
+        </header>
 
-    <!-- Стоимость недвижимости -->
-    <div class="input-group">
-        <div class="label-val">
-            <span>Стоимость недвижимости:</span>
-            <span id="priceVal">5 000 000 ₽</span>
+        <div class="calc-container">
+            <!-- Левая колонка: Ввод данных -->
+            <div class="calc-block inputs-side">
+                <h3>Параметры недвижимости</h3>
+                
+                <div class="input-box">
+                    <div class="label-row">
+                        <label for="price">Стоимость недвижимости</label>
+                        <span class="value-display" id="price-val">7 000 000 ₽</span>
+                    </div>
+                    <input type="range" id="price" min="1000000" max="30000000" step="100000" value="7000000">
+                </div>
+
+                <div class="input-box">
+                    <div class="label-row">
+                        <label for="down-payment">Первоначальный взнос</label>
+                        <span class="value-display" id="dp-val">20%</span>
+                    </div>
+                    <input type="range" id="down-payment" min="10" max="90" step="5" value="20">
+                </div>
+
+                <div class="input-box">
+                    <div class="label-row">
+                        <label for="term">Срок программы (лет)</label>
+                        <span class="value-display" id="term-val">10 лет</span>
+                    </div>
+                    <input type="range" id="term" min="1" max="25" step="1" value="10">
+                </div>
+
+                <div class="input-box bank-rate-box">
+                    <div class="label-row">
+                        <label for="bank-rate">Ставка в коммерческом банке</label>
+                        <span class="value-display accent-color" id="bank-rate-val">22%</span>
+                    </div>
+                    <input type="range" id="bank-rate" min="12" max="30" step="0.5" value="22">
+                </div>
+            </div>
+
+            <!-- Правая колонка: Сравнение -->
+            <div class="calc-block results-side">
+                <div class="compare-grid">
+                    <!-- Кооператив -->
+                    <div class="card coop-card">
+                        <h4>Кооператив</h4>
+                        <div class="badge">Ставка 10% фиксирована</div>
+                        <div class="card-metrics">
+                            <div class="metric">
+                                <span>Ежемесячный платеж:</span>
+                                <strong id="coop-payment">0 ₽</strong>
+                            </div>
+                            <div class="metric">
+                                <span>Общая переплата:</span>
+                                <strong id="coop-overpayment">0 ₽</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Банк -->
+                    <div class="card bank-card">
+                        <h4>Ипотека в банке</h4>
+                        <div class="badge-bank">Обычный расчет</div>
+                        <div class="card-metrics">
+                            <div class="metric">
+                                <span>Ежемесячный платеж:</span>
+                                <strong id="bank-payment">0 ₽</strong>
+                            </div>
+                            <div class
+
+
+="metric">
+                                <span>Общая переплата:</span>
+                                <strong id="bank-overpayment">0 ₽</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок финальной разницы -->
+                <div class="total-benefit-box">
+                    <h3>Ваша чистая экономия в Кооперативе:</h3>
+                    <div class="benefit-amount" id="total-saving">0 ₽</div>
+                    <p class="benefit-note">Вы сохраняете эти деньги, не переплачивая проценты банку.</p>
+                </div>
+            </div>
         </div>
-        <input type=
-
-
-e" id="price" min="1000000" max="30000000" step="100000" value="5000000">
     </div>
 
-    <!-- Первоначальный взнос -->
-    <div class="input-group">
-        <div class="label-val">
-            <span>Первоначальный взнос (30%):</span>
-            <span id="depositVal">1 500 000 ₽</span>
-        </div>
-    </div>
+    <script>
+        const COOP_FIXED_RATE = 10; 
 
-    <!-- Срок -->
-    <div class="input-group">
-        <div class="label-val">
-            <span>Срок рассрочки / кредита:</span>
-            <span id="termVal">10 лет</span>
-        </div>
-        <input type="range" id="term" min="1" max="30" step="1" value="10">
-    </div>
+        const priceInput = document.getElementById('price');
+        const dpInput = document.getElementById('down-payment');
+        const termInput = document.getElementById('term');
+        const bankRateInput = document.getElementById('bank-rate');
 
-    <!-- Ставка Кооператива (Фиксированная) -->
-    <div class="input-group">
-        <div class="label-val">
-            <span>Ставка кооператива социальных программ:</span>
-            <span class="fixed-badge">10% годовых</span>
-        </div>
-    </div>
+        const priceVal = document.getElementById('price-val');
+        const dpVal = document.getElementById('dp-val');
+        const termVal = document.getElementById('term-val');
+        const bankRateVal = document.getElementById('bank-rate-val');
 
-    <!-- Ставка Банка (Регулируемая) -->
-    <div class="input-group">
-        <div class="label-val">
-            <span>Процентная ставка банка:</span>
-            <span id="bankRateVal">15% годовых</span>
-        </div>
-        <input type="range" id="bankRate" min="5" max="30" step="0.5" value="15">
-    </div>
+        const coopPaymentOut = document.getElementById('coop-payment');
+        const coopOverpaymentOut = document.getElementById('coop-overpayment');
+        const bankPaymentOut = document.getElementById('bank-payment');
+        const bankOverpaymentOut = document.getElementById('bank-overpayment');
+        const totalSavingOut = document.getElementById('total-saving');
 
-    <!-- Результаты вычислений -->
-    <div class="results-grid">
-        <!-- Кооператив -->
-        <div class="card coop">
-            <h3>Кооператив (10%)</h3>
-            <div class="res-row">Ежемесячный платеж:<strong id="coopPayment">0 ₽</strong></div>
-            <div class="res-row">Переплата:<strong id="coopOverpayment">0 ₽</strong></div>
-            <div class="res-row">Всего выплат:<strong id="coopTotal">0 ₽</strong></div>
-        </div>
-
-        <!-- Банк -->
-        <div class="card bank">
-            <h3>Банк</h3>
-            <div class="res-row">Ежемесячный платеж:<strong id="bankPayment">0 ₽</strong></div>
-            <div class="res-row">Переплата:<strong id="bankOverpayment">0 ₽</strong></div>
-            <div class="res-row">Всего выплат:<strong id="bankTotal">0 ₽</strong></div>
-        </div>
-
-        <!-- Разница / Выгода -->
-        <div class="savings-block">
-            <p>Ваша выгода при выборе Кооператива:</p>
-            <div class="amount" id="savings">0 ₽</div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const priceInput = document.getElementById('price');
-    const termInput = document.getElementById('term');
-    const bankRateInput = document.getElementById('bankRate');
-
-    const priceVal = document.getElementById('priceVal');
-    const depositVal = document.getElementById('depositVal');
-    const termVal = document.getElementById('termVal');
-    const bankRateVal = document.getElementById('bankRateVal');
-
-    const coopPayment = document.getElementById('coopPayment');
-    const coopOverpayment = document.getElementById('coopOverpayment');
-    const coopTotal = document.getElementById('coopTotal');
-
-    const bankPayment = document.getElementById('bankPayment');
-    const bankOverpayment = document.getElementById('bankOverpayment');
-    const bankTotal = document.getElementById('bankTotal');
-    const savings = document.getElementById('savings');
-
-    function formatMoney(num) {
-        return Math.round(num).toLocaleString('ru-RU') + ' ₽';
-    }
-
-    function calculate() {
-        const price = parseFloat(priceInput.value);
-        const termYears = parseInt(termInput.value);
-        const termMonths = termYears * 12;
-        const bankRate = parseFloat(bankRateInput.value) / 100 / 12;
-        const coopRate = 0.10 / 12; // Фиксированная ставка кооператива 10%
-
-        // Расчет первоначального взноса (30%) и суммы займа
-        const deposit = price * 0.30;
-        const loanAmount = price - deposit;
-
-        // Обновление текстовых меток интерфейса
-        priceVal.innerText = formatMoney(price);
-        depositVal.innerText = formatMoney(deposit);
-        termVal.innerText = `${termYears} ${termYears === 1 ? 'год' : termYears < 5 ? 'года' : 'лет'}`;
-        bankRateVal.innerText = `${bankRateInput.value}% годовых`;
-
-        // Расчет аннуитета для Банка
-        const bankMonthly = loanAmount * (bankRate * Math.pow(1 + bankRate, termMon
-
-
-ths)) / (Math.pow(1 + bankRate, termMonths) - 1);
-        const bankTotalPay = bankMonthly * termMonths;
-        const bankOverpay = bankTotalPay - loanAmount;
-
-        // Расчет аннуитета для Кооператива
-        const coopMonthly = loanAmount * (coopRate * Math.pow(1 + coopRate, termMonths)) / (Math.pow(1 + coopRate, termMonths) - 1);
-        const coopTotalPay = coopMonthly * termMonths;
-        const coopOverpay = coopTotalPay - loanAmount;
-
-        // Расчет чистой выгоды
-        const totalSavings = bankTotalPay - coopTotalPay;
-
-        // Вывод результатов на экран
-        coopPayment.innerText = formatMoney(coopMonthly);
-        coopOverpayment.innerText = formatMoney(coopOverpay);
-        coopTotal.innerText = formatMoney(coopTotalPay);
-
-        bankPayment.innerText = formatMoney(bankMonthly);
-        bankOverpayment.innerText = formatMoney(bankOverpay);
-        bankTotal.innerText = formatMoney(bankTotalPay);
-
-        if (totalSavings > 0) {
-            savings.innerText = formatMoney(totalSavings);
-            savings.style.color = '#22c55e';
-        } else {
-            savings.innerText = formatMoney(Math.abs(totalSavings)) + ' (выгоднее Банк)';
-            savings.style.color = '#ef4444';
-        }
-    }
-
-    // Слушатели изменения ползунков
-    priceInput.addEventListener('input', calculate);
-    termInput.addEventListener('input', calculate);
-    bankRateInput.addEventListener('input', calculate);
-
-    // Первичный запуск расчета при загрузке страницы
-    calculate();
-</script>
-
-</body>
-</html>"rang
+        function calculateAnnuity(principal, annualRate, years) {
+            if (principal <= 0) return 0;;
