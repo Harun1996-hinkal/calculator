@@ -13,6 +13,8 @@
             --accent-green: #10b981;
             --accent-blue: #3b82f6;
             --accent-orange: #f59e0b;
+            --input-bg: #151b30;
+            --border-color: #2e3a5f;
         }
 
         body {
@@ -51,7 +53,7 @@
             gap: 30px;
         }
 
-        max-width: 900px {
+        @media (max-width: 900px) {
             .calc-container { grid-template-columns: 1fr; }
         }
 
@@ -65,12 +67,12 @@
         .inputs-side h3 {
             margin-top: 0;
             margin-bottom: 25px;
-            border-bottom: 1px solid #2e3a5f;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
         }
 
         .input-box {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .label-row {
@@ -81,40 +83,26 @@
             color: var(--text-muted);
         }
 
-        .value-display {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .accent-color {
-            color: var(--accent-orange);
-        }
-
-        input[type="range"] {
+        /* Стилизация текстовых полей ввода */
+        .input-field {
             width: 100%;
-            -webkit-appearance: none;
-            background: #2e3a5f;
-            height: 6px;
-            border-radius: 5px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 16px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            box-sizing: border-box;
             outline: none;
+            transition: border-color 0.2s;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            cursor: pointer;
-            transition: transform 0.1s;
+        .input-field:focus {
+            border-color: var(--accent-blue);
         }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        .bank-rate-box input[type="range"]::-webkit-slider-thumb {
-            background: var(--accent-orange);
+        .bank-rate-box .input-field:focus {
+            border-color: var(--accent-orange);
         }
 
         .compare-grid {
@@ -124,7 +112,7 @@
             margin-bottom: 30px;
         }
 
-        max-width: 550px {
+        @media (max-width: 550px) {
             .compare-grid { grid-template-columns: 1fr; }
         }
 
@@ -152,10 +140,7 @@
         .badge-bank { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
 
         .metric { margin-bottom: 12px; }
-        .metric span { display: block; font-size: 0.85rem
-
-
-color: var(--text-muted); margin-bottom: 2px; }
+        .metric span { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2px; }
         .metric strong { font-size: 1.15rem; }
 
         .total-benefit-box {
@@ -169,6 +154,8 @@ color: var(--text-muted); margin-bottom: 2px; }
         .total-benefit-box h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-muted); }
         .benefit-amount { font-size: 2.2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 8px; }
         .benefit-note { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+        
+        .rub-hint { color: var(--text-muted); font-size: 0.85rem; font-weight: normal; }
     </style>
 </head>
 <body>
@@ -180,44 +167,41 @@ color: var(--text-muted); margin-bottom: 2px; }
         </header>
 
         <div class="calc-container">
-            <!-- Левая колонка: Ввод данных -->
+            <!-- Левая колонка: Ввод данных вручную -->
             <div class="calc-block inputs-side">
                 <h3>Параметры недвижимости</h3>
                 
                 <div class="input-box">
                     <div class="label-row">
-                        <label for="price">Стоимость недвижимости</label>
-                        <span class="value-display" id="price-val">7 000 000 ₽</span>
+                        <label for="price">Стоимость недвижимости (руб.)</label>
                     </div>
-                    <input type="range" id="price" min="1000000" max="30000000" step="100000" value="7000000">
+                    <input type="number" id="price" class="input-field" value="7000000" placeholder="Например: 7000000">
                 </div>
 
                 <div class="input-box">
                     <div class="label-row">
-                        <label for="down-payment">Первоначальный взнос</label>
-                        <span class="value-display" id="dp-val">20%</span>
+                        <label for="down-payment">Первоначальный взнос (%)</label>
+                        <span id="dp-rub-hint" class="rub-hint">0 ₽</span>
                     </div>
-                    <input type="range" id="down-payment" min="10" max="90" step="5" value="20">
+                    <input type="number" id="down-payment" class="input-field" value="20" min="0" max="100" placeholder="Например: 20">
                 </div>
 
                 <div class="input-box">
                     <div class="label-row">
                         <label for="term">Срок программы (лет)</label>
-                        <span class="value-display" id="term-val">10 лет</span>
                     </div>
-                    <input type="range" id="term" min="1" max="25" step="1" value="10">
+                    <input type="number" id="term" class="input-field" value="10" placeholder="Например: 10">
                 </div>
 
                 <div class="input-box bank-rate-box">
                     <div class="label-row">
-                        <label for="bank-rate">Ставка в коммерческом банке</label>
-                        <span class="value-display accent-color" id="bank-rate-val">22%</span>
+                        <label for="bank-rate">Ставка в коммерческом банке (%)</label>
                     </div>
-                    <input type="range" id="bank-rate" min="12" max="30" step="0.5" value="22">
+                    <input type="number" id="bank-rate" class="input-field" value="22" step="0.1" placeholder="Например: 22.5">
                 </div>
             </div>
 
-            <!-- Правая колонка: Сравнение -->
+            <!-- Правая колонка: Сравнение результатов -->
             <div class="calc-block results-side">
                 <div class="compare-grid">
                     <!-- Кооператив -->
@@ -245,10 +229,7 @@ color: var(--text-muted); margin-bottom: 2px; }
                                 <span>Ежемесячный платеж:</span>
                                 <strong id="bank-payment">0 ₽</strong>
                             </div>
-                            <div class
-
-
-="metric">
+                            <div class="metric">
                                 <span>Общая переплата:</span>
                                 <strong id="bank-overpayment">0 ₽</strong>
                             </div>
@@ -269,21 +250,25 @@ color: var(--text-muted); margin-bottom: 2px; }
     <script>
         const COOP_FIXED_RATE = 10; 
 
+        // Элементы ввода данных
         const priceInput = document.getElementById('price');
         const dpInput = document.getElementById('down-payment');
         const termInput = document.getElementById('term');
         const bankRateInput = document.getElementById('bank-rate');
 
-        const priceVal = document.getElementById('price-val');
-        const dpVal = document.getElementById('dp-val');
-        const termVal = document.getElementById('term-val');
-        const bankRateVal = document.getElementById('bank-rate-val');
+        // Подсказка для отображения взноса в рублях
+        const dpRubHint = document.getElementById('dp-rub-hint');
 
+        // Элементы вывода результатов
         const coopPaymentOut = document.getElementById('coop-payment');
         const coopOverpaymentOut = document.getElementById('coop-overpayment');
         const bankPaymentOut = document.getElementById('bank-payment');
         const bankOverpaymentOut = document.getElementById('bank-overpayment');
         const totalSavingOut = document.getElementById('total-saving');
 
+        // Функция расчета ежемесячного аннуитетного платежа
         function calculateAnnuity(principal, annualRate, years) {
-            if (principal <= 0) return 0;;
+            if (principal <= 0 || years <= 0) return 0;
+            const monthlyRate = annualRate / 12 / 100;
+            const totalMonths = years * 12;
+            if (monthlyRate === 0) return principal / totalMonths;
