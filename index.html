@@ -83,7 +83,7 @@
             color: var(--text-muted);
         }
 
-        /* Стилизация текстовых полей ввода */
+        /* Поля ввода цифр */
         .input-field {
             width: 100%;
             background-color: var(--input-bg);
@@ -167,7 +167,7 @@
         </header>
 
         <div class="calc-container">
-            <!-- Левая колонка: Ввод данных вручную -->
+            <!-- Левая колонка -->
             <div class="calc-block inputs-side">
                 <h3>Параметры недвижимости</h3>
                 
@@ -175,7 +175,7 @@
                     <div class="label-row">
                         <label for="price">Стоимость недвижимости (руб.)</label>
                     </div>
-                    <input type="number" id="price" class="input-field" value="7000000" placeholder="Например: 7000000">
+                    <input type="number" id="price" class="input-field" value="7000000">
                 </div>
 
                 <div class="input-box">
@@ -183,25 +183,25 @@
                         <label for="down-payment">Первоначальный взнос (%)</label>
                         <span id="dp-rub-hint" class="rub-hint">0 ₽</span>
                     </div>
-                    <input type="number" id="down-payment" class="input-field" value="20" min="0" max="100" placeholder="Например: 20">
+                    <input type="number" id="down-payment" class="input-field" value="20" min="0" max="100">
                 </div>
 
                 <div class="input-box">
                     <div class="label-row">
                         <label for="term">Срок программы (лет)</label>
                     </div>
-                    <input type="number" id="term" class="input-field" value="10" placeholder="Например: 10">
+                    <input type="number" id="term" class="input-field" value="10">
                 </div>
 
                 <div class="input-box bank-rate-box">
                     <div class="label-row">
                         <label for="bank-rate">Ставка в коммерческом банке (%)</label>
                     </div>
-                    <input type="number" id="bank-rate" class="input-field" value="22" step="0.1" placeholder="Например: 22.5">
+                    <input type="number" id="bank-rate" class="input-field" value="22" step="0.1">
                 </div>
             </div>
 
-            <!-- Правая колонка: Сравнение результатов -->
+            <!-- Правая колонка -->
             <div class="calc-block results-side">
                 <div class="compare-grid">
                     <!-- Кооператив -->
@@ -237,7 +237,7 @@
                     </div>
                 </div>
 
-                <!-- Блок финальной разницы -->
+                <!-- Блок разницы -->
                 <div class="total-benefit-box">
                     <h3>Ваша чистая экономия в Кооперативе:</h3>
                     <div class="benefit-amount" id="total-saving">0 ₽</div>
@@ -250,25 +250,29 @@
     <script>
         const COOP_FIXED_RATE = 10; 
 
-        // Элементы ввода данных
         const priceInput = document.getElementById('price');
         const dpInput = document.getElementById('down-payment');
         const termInput = document.getElementById('term');
         const bankRateInput = document.getElementById('bank-rate');
-
-        // Подсказка для отображения взноса в рублях
         const dpRubHint = document.getElementById('dp-rub-hint');
 
-        // Элементы вывода результатов
         const coopPaymentOut = document.getElementById('coop-payment');
         const coopOverpaymentOut = document.getElementById('coop-overpayment');
         const bankPaymentOut = document.getElementById('bank-payment');
         const bankOverpaymentOut = document.getElementById('bank-overpayment');
         const totalSavingOut = document.getElementById('total-saving');
 
-        // Функция расчета ежемесячного аннуитетного платежа
         function calculateAnnuity(principal, annualRate, years) {
             if (principal <= 0 || years <= 0) return 0;
             const monthlyRate = annualRate / 12 / 100;
             const totalMonths = years * 12;
             if (monthlyRate === 0) return principal / totalMonths;
+            return principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+        }
+
+        function updateCalculator() {
+            const price = parseFloat(priceInput.value) || 0;
+            const dpPercent = parseFloat(dpInput.value) || 0;
+            const termYears = parseFloat(termInput.value) || 0;
+            const bankRate = parseFloat(bankRateInput.value) || 0;
+
