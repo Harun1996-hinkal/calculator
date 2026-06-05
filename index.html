@@ -3,30 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор: Кооператив vs Банк</title>
+    <title>Кооператив социальных программ: Калькулятор выгоды</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; box-sizing: border-box; }
-        h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 20px; font-size: 20px; }
-        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 14px; color: #555; }
+        .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; box-sizing: border-box; }
+        .coop-header { text-align: center; color: #137333; font-size: 24px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        h2 { text-align: center; color: #555; margin-top: 0; margin-bottom: 25px; font-size: 18px; font-weight: normal; border-bottom: 2px solid #f0f2f5; padding-bottom: 15px; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 14px; color: #444; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         .bank-rate-input { background: #fff5f5; border: 1px solid #fc9d9d; }
-        button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 6px; margin-top: 20px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 6px; margin-top: 25px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         button:hover { background: #218838; }
-        .columns { display: flex; gap: 15px; margin-top: 20px; border-top: 2px solid #f0f2f5; padding-top: 15px; }
+        .columns { display: flex; gap: 15px; margin-top: 25px; }
         .col { flex: 1; padding: 15px; border-radius: 8px; box-sizing: border-box; text-align: center; }
         .coop { background: #e6f4ea; border: 2px solid #28a745; }
         .bank { background: #fce8e6; border: 2px solid #dc3545; }
         .col-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
         .coop .col-title { color: #137333; }
         .bank .col-title { color: #c5221f; }
-        .res-val { font-size: 20px; font-weight: bold; margin: 8px 0; color: #333; }
+        .res-val { font-size: 22px; font-weight: bold; margin: 8px 0; color: #333; }
         .small-text { font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
 <div class="box">
-    <h2>Сравнение выгоды: Кооператив и Банк</h2>
+    <div class="coop-header">Кооператив социальных программ</div>
+    <h2>Расчет и сравнение выгоды с банком</h2>
     
     <label>Цена квартиры (₽)</label>
     <input type="number" id="c" value="5000000">
@@ -37,23 +39,25 @@
     <label>Срок (лет)</label>
     <input type="number" id="t" value="10">
     
-    <label>Текущая ставка в банке (%) — <span style="color:#c5221f; font-weight:normal;">можно менять</span></label>
+    <label>Текущая ставка в банке (%)</label>
     <input type="number" id="bank_rate" class="bank-rate-input" value="20" step="0.1">
     
     <button onclick="calc()">Рассчитать выгоду</button>
     
     <div class="columns">
+        <!-- Колонка Кооператива -->
         <div class="col coop">
             <div class="col-title">Наш Кооператив</div>
             <div class="small-text">Ставка зафиксирована: 10%</div>
-            <div class="res-val" id="m_coop">0 ₽</div>
+            <div class="res-val" id="m_coop">33 038 ₽</div>
             <div class="small-text">в месяц</div>
         </div>
         
+        <!-- Колонка Банка -->
         <div class="col bank">
             <div class="col-title">Обычный Банк</div>
             <div class="small-text" id="bank_text">При ставке: 20%</div>
-            <div class="res-val" id="m_bank">0 ₽</div>
+            <div class="res-val" id="m_bank">48 315 ₽</div>
             <div class="small-text">в месяц</div>
         </div>
     </div>
@@ -61,28 +65,34 @@
 
 <script>
 function calc() {
-    var price = parseFloat(document.getElementById('c').value) || 0;
-    var downpayment = parseFloat(document.getElementById('d').value) || 0;
-    var years = parseFloat(document.getElementById('t').value) || 0;
-    var b_rate = parseFloat(document.getElementById('bank_rate').value) || 0;
+    var price = Number(document.getElementById('c').value) || 0;
+    var downpayment = Number(document.getElementById('d').value) || 0;
+    var years = Number(document.getElementById('t').value) || 0;
+    var b_rate = Number(document.getElementById('bank_rate').value) || 0;
     
     var credit = price - downpayment;
     var months = years * 12;
     
-    if (credit <= 0 || months <= 0) {
-        alert('Сумма первого взноса не может быть больше или равна стоимости квартиры!');
+    if (credit <= 0 || months <= 0 || b_rate <= 0) {
+        alert('Пожалуйста, проверьте правильность введенных цифр!');
         return;
     }
     
-    // 1. Расчет для Кооператива (строго 10%)
-    var r_coop = (10 / 100) / 12;
-    var pay_coop = credit * (r_coop * Math.pow(1 + r_coop, months)) / (Math.pow(1 + r_coop, months) - 1);
+    // Расчет Кооператива (10%)
+    var r1 = (10 / 100) / 12;
+    var p1 = credit * (r1 * Math.pow(1 + r1, months)) / (Math.pow(1 + r1, months) - 1);
     
-    // 2. Расчет для Банка
-    var r_bank = (b_rate / 100) / 12;
-    var pay_bank = 0;
-    if (r_bank > 0) {
-        pay_bank = credit * (r_bank * Math.pow(1 + r_bank, months)) / (Math.pow(1 + r_bank, months) - 1);
-    }
+    // Расчет Банка
+    var r2 = (b_rate / 100) / 12;
+
+
+ar p2 = credit * (r2 * Math.pow(1 + r2, months)) / (Math.pow(1 + r2, months) - 1);
     
-    var formatter = new Intl.NumberFormat('ru-RU', { style: 'currency',
+    // Вывод результатов
+    document.getElementById('m_coop').innerText = Math.round(p1).toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('m_bank').innerText = Math.round(p2).toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('bank_text').innerText = 'При ставке: ' + b_rate + '%';
+}
+</script>
+</body>
+</html> v
