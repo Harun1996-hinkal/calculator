@@ -32,7 +32,7 @@
     <input type="number" id="c" value="5000000">
     
     <label>Первый взнос (₽)</label>
-    <input type="number" id="d" value="1000000">
+    <input type="number" id="d" value="2500000">
     
     <label>Срок (лет)</label>
     <input type="number" id="t" value="10">
@@ -43,7 +43,6 @@
     <button onclick="calc()">Рассчитать выгоду</button>
     
     <div class="columns">
-        <!-- Колонка Кооператива -->
         <div class="col coop">
             <div class="col-title">Наш Кооператив</div>
             <div class="small-text">Ставка зафиксирована: 10%</div>
@@ -51,7 +50,6 @@
             <div class="small-text">в месяц</div>
         </div>
         
-        <!-- Колонка Банка -->
         <div class="col bank">
             <div class="col-title">Обычный Банк</div>
             <div class="small-text" id="bank_text">При ставке: 20%</div>
@@ -63,30 +61,28 @@
 
 <script>
 function calc() {
-    let c = +document.getElementById('c').value, d = +document.getElementById('d').value, t = +document.getElementById('t').value;
-    let b_rate = +document.getElementById('bank_rate').value;
-    let credit = c - d, months = t * 12;
+    var price = parseFloat(document.getElementById('c').value) || 0;
+    var downpayment = parseFloat(document.getElementById('d').value) || 0;
+    var years = parseFloat(document.getElementById('t').value) || 0;
+    var b_rate = parseFloat(document.getElementById('bank_rate').value) || 0;
     
-    if(credit <= 0 || months <= 0) return alert('Проверьте цифры стоимости и взноса!');
-    if(b_rate <= 0) return alert('Введите корректную ставку банка!');
+    var credit = price - downpayment;
+    var months = years * 12;
     
-    // Считаем Кооператив (всегда 10%)
-    let r_coop = 10 / 100 / 12;
-    let pay_coop = credit * (r_coop * Math.pow(1 + r_coop, months)) / (Math.pow(1 + r_coop, months) - 1);
+    if (credit <= 0 || months <= 0) {
+        alert('Сумма первого взноса не может быть больше или равна стоимости квартиры!');
+        return;
+    }
     
-    // Считаем Банк
-    let r_bank = b_rate / 100 / 12;
-    let pay_bank = credit * (r_bank * Math.pow(1 + r_bank, months)) / (Math.pow(1 + r_bank, months) - 1);
+    // 1. Расчет для Кооператива (строго 10%)
+    var r_coop = (10 / 100) / 12;
+    var pay_coop = credit * (r_coop * Math.pow(1 + r_coop, months)) / (Math.pow(1 + r_coop, months) - 1);
     
-    let f = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
-    document.getElementById('m_coop').innerText = f.format(pay_coop);
-    document
-
-
-mentById('m_bank').innerText = f.format(pay_bank);
-    document.getElementById('bank_text').innerText = 'При ставке: ' + b_rate + '%';
-}
-window.onload = calc;
-</script>
-</body>
-</html>.getEle
+    // 2. Расчет для Банка
+    var r_bank = (b_rate / 100) / 12;
+    var pay_bank = 0;
+    if (r_bank > 0) {
+        pay_bank = credit * (r_bank * Math.pow(1 + r_bank, months)) / (Math.pow(1 + r_bank, months) - 1);
+    }
+    
+    var formatter = new Intl.NumberFormat('ru-RU', { style: 'currency',
