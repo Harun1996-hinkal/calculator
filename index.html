@@ -117,12 +117,12 @@
     
     <div class="form-group">
         <label for="property-value">Стоимость имущества/недвижимости (₽)</label>
-        <input type="number" id="property-value" value="4000000" step="50000">
+        <input type="number" id="property-value" value="3000000" step="50000">
     </div>
 
     <div class="form-group">
         <label for="initial-fee">Ваш первоначальный паевой взнос (₽)</label>
-        <input type="number" id="initial-fee" value="1000000" step="50000">
+        <input type="number" id="initial-fee" value="600000" step="50000">
         <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 20% от стоимости</div>
     </div>
 
@@ -148,8 +148,11 @@
             <span>Итоговый ежемесячный платеж:</span>
             <span class="result-value" id="res-total-monthly" style="font-size: 18px;">0 ₽/мес</span>
         </div>
-        <div id="limit-error" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
+        <div id="limit-error-high" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
             Внимание! Платеж превышает лимит 70 000 ₽/мес. Увеличьте срок программы или первоначальный взнос.
+        </div>
+        <div id="limit-error-low" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
+            Внимание! Платеж ниже лимита 40 000 ₽/мес. Уменьшите срок программы или первоначальный взнос.
         </div>
     </div>
 
@@ -168,10 +171,12 @@
     const resTotalMonthly = document.getElementById('res-total-monthly');
     
     const initialError = document.getElementById('initial-error');
-    const limitError = document.getElementById('limit-error');
+    const limitErrorHigh = document.getElementById('limit-error-high');
+    const limitErrorLow = document.getElementById('limit-error-low');
 
     // Начисляемый процент инвестора (10% годовых на остаток)
     const INVESTOR_ANNUAL_PCT = 0.10; 
+    const MIN_MONTHLY_LIMIT = 40000;
     const MAX_MONTHLY_LIMIT = 70000;
 
     function formatCurrency(num) {
@@ -186,7 +191,8 @@
 
         // Сброс ошибок и стилей
         initialError.style.display = 'none';
-        limitError.style.display = 'none';
+        limitErrorHigh.style.display = 'none';
+        limitErrorLow.style.display = 'none';
         resTotalMonthly.style.color = 'var(--primary-color)';
 
         // 1. Проверка минимального взноса в 20%
@@ -219,9 +225,12 @@
         resMonthlyMembership.textContent = formatCurrency(monthlyMembership);
         resTotalMonthly.textContent = formatCurrency(totalMonthly) + '/мес';
 
-        // 4. Проверка лимита в 70 000 рублей
+        // 4. Проверка рамок коридора платежа (40к - 70к)
         if (totalMonthly > MAX_MONTHLY_LIMIT) {
-            limitError.style.display = 'block';
+            limitErrorHigh.style.display = 'block';
+            resTotalMonthly.style.color = 'var(--error-color)';
+        } else if (totalMonthly < MIN_MONTHLY_LIMIT) {
+            limitErrorLow.style.display = 'block';
             resTotalMonthly.style.color = 'var(--error-color)';
         }
     }
