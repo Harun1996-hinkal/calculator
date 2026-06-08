@@ -3,278 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Финансовый калькулятор: Кооператив vs Банк</title>
+    <title>Калькулятор ЦПП — ПКСП Решение</title>
     <style>
         :root {
-            --bg-dark: #121824;
-            --card-bg: #1e2640;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --accent-green: #10b981;
-            --accent-blue: #3b82f6;
-            --accent-orange: #f59e0b;
-            --input-bg: #151b30;
-            --border-color: #2e3a5f;
+            --primary-color: #1a446c;
+            --accent-color: #2b7a78;
+            --bg-color: #ffffff;
+            --text-color: #2b2b2b;
         }
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 40px 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
         }
-        .calc-wrapper {
-            width: 100%;
-            max-width: 1100px;
-        }
-        .calc-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .calc-header h2 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-        .calc-header p {
-            color: var(--text-muted);
-            margin: 0;
-        }
         .calc-container {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 30px;
+            background: #ffffff;
+            padding: 20px;
+            max-width: 480px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        @media (max-width: 900px) {
-            .calc-container { grid-template-columns: 1fr; }
-        }
-        .calc-block {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .inputs-side h3, .results-side h3 {
+        h2 {
+            color: var(--primary-color);
             margin-top: 0;
+            font-size: 20px;
+            text-align: center;
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin-top: -10px;
             margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
-        .input-box {
-            margin-bottom: 20px;
+        .form-group {
+            margin-bottom: 18px;
         }
-        .label-row {
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: #ffffff;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .result-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 18px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 22px;
+        }
+        .result-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-size: 14px;
         }
-        .input-field {
-            width: 100%;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 16px;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.2s;
+        .result-item:last-child {
+            margin-bottom: 0;
         }
-        .input-field:focus {
-            border-color: var(--accent-blue);
+        .result-value {
+            font-weight: bold;
+            color: var(--primary-color);
         }
-        .bank-rate-box .input-field:focus {
-            border-color: var(--accent-orange);
+        .total-row {
+            border-top: 1px solid #cbd5e1;
+            padding-top: 12px;
+            margin-top: 12px;
+            font-weight: bold;
         }
-        .compare-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        @media (max-width: 550px) {
-            .compare-grid { grid-template-columns: 1fr; }
-        }
-        .card {
-            background: #151b30;
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #252f52;
-        }
-        .coop-card { border-top: 4px solid var(--accent-green); }
-        .bank-card { border-top: 4px solid var(--accent-orange); }
-        .card h4 { margin: 0 0 5px 0; font-size: 1.2rem; }
-        .badge, .badge-bank {
-            display: inline-block;
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .badge { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
-        .badge-bank { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
-        .metric { margin-bottom: 12px; }
-        .metric span { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2px; }
-        .metric strong { font-size: 1.15rem; }
-        .total-benefit-box {
-            background: linear-gradient(135deg, #064e3b 0%, #111827 100%);
-            border-radius: 12px;
-            padding: 25px;
+        .disclaimer {
+            font-size: 10.5px;
+            color: #64748b;
             text-align: center;
-            border: 1px solid var(--accent-green);
+            margin-top: 22px;
+            line-height: 1.4;
         }
-        .total-benefit-box h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-muted); border: none; padding: 0; }
-        .benefit-amount { font-size: 2.2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 8px; }
-        .benefit-note { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
-        .rub-hint { color: var(--text-muted); font-size: 0.85rem; font-weight: normal; }
     </style>
 </head>
 <body>
-    <div class="calc-wrapper">
-        <header class="calc-header">
-            <h2>Сравнение выгоды программы</h2>
-            <p>Условия кооператива зафиксированы под 10% годовых</p>
-        </header>
-        <div class="calc-container">
-            <div class="calc-block inputs-side">
-                <h3>Параметры недвижимости</h3>
-                <div class="input-box">
-                    <div class="label-row">
-                        <label for="price">Стоимость недвижимости (руб.)</label>
-                    </div>
-                    <input type="number" id="price" class="input-field" value="7000000">
-                </div>
-                <div class="input-box">
-                    <div class="label-row">
-                        <label for="down-payment">Первоначальный взнос (%)</label>
-                        <span id="dp-rub-hint" class="rub-hint">0 ₽</span>
-                    </div>
-                    <input type="number" id="down-payment" class="input-field" value="20" min="0" max="100">
-                </div>
-                <div class="input-box">
-                    <div class="label-row">
-                        <label for="term">Срок программы (лет)</label>
-                    </div>
-                    <input type="number" id="term" class="input-field" value="10">
-                </div>
-                <div class="input-box bank-rate-box">
-                    <div class="label-row">
-                        <label for="bank-rate">Ставка в коммерческом банке (%)</label>
-                    </div>
-                    <input type="number" id="bank-rate" class="input-field" value="22" step="0.1">
-                </div>
-            </div>
-            <div class="calc-block results-side">
-                <h3>Результаты расчета</h3>
-                <div class="compare-grid">
-                    <div class="card coop-card">
-                        <h4>Кооператив</h4>
-                        <span class="badge">Ставка 10% фиксированная</span>
-                        <div class="metric">
-                            <span>Ежемесячный платеж</span>
-                            <strong id="coop-payment">0 ₽</strong>
-                        </div>
-                        <div class="metric">
-                            <span>Переплата по %</span>
-                            <strong id="coop-overpayment">0 ₽</strong>
-                        </div>
-                    </div>
-                    <div class="card bank-card">
-                        <h4>Коммерческий банк</h4>
-                        <span class="badge-bank" id="bank-badge-rate">Ставка 22%</span>
-                        <div class="metric">
-                            <span>Ежемесячный платеж</span>
-                            <strong id="bank-payment">0 ₽</strong>
-                        </div>
-                        <div class="metric">
-                            <span>Переплата по %</span>
-                            <strong id="bank-overpayment">0 ₽</strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="total-benefit-box">
-                    <h3>Ваша общая выгода</h3>
-                    <div class="benefit-amount" id="total-saving">0 ₽</div>
-                    <p class="benefit-note">Экономия на переплате при выборе кооператива</p>
-                </div>
-            </div>
+
+<div class="calc-container">
+    <h2>Расчет участия в целевой программе</h2>
+    <div class="subtitle">ПКСП «РЕШЕНИЕ»</div>
+    
+    <div class="form-group">
+        <label for="property-value">Стоимость имущества/недвижимости (₽)</label>
+        <input type="number" id="property-value" value="5000000" step="100000" min="500000">
+    </div>
+
+    <div class="form-group">
+        <label for="initial-fee-pct">Первоначальный паевой взнос (мин. 20%)</label>
+        <select id="initial-fee-pct">
+            <option value="20">20% (Минимальный)</option>
+            <option value="30">30%</option>
+            <option value="40">40%</option>
+            <option value="50" selected>50%</option>
+            <option value="60">60%</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="years">Срок программы (лет)</label>
+        <select id="years">
+            <option value="3">3 года</option>
+            <option value="5" selected>5 лет</option>
+            <option value="7">7 лет</option>
+            <option value="10">10 лет</option>
+        </select>
+    </div>
+
+    <div class="result-box">
+        <div class="result-item">
+            <span>Ваш первоначальный паевой взнос:</span>
+            <span class="result-value" id="res-initial">0 ₽</span>
+        </div>
+        <div class="result-item">
+            <span>Добавляет Кооператив (Объем программы):</span>
+            <span class="result-value" id="res-remain" style="color: var(--accent-color);">0 ₽</span>
+        </div>
+        <div class="result-item" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 10px;">
+            <span>Ежемесячный взнос в паевой фонд:</span>
+            <span class="result-value" id="res-monthly-share">0 ₽/мес</span>
+        </div>
+        <div class="result-item">
+            <span>Ежемесячный членский взнос:</span>
+            <span class="result-value" id="res-monthly-membership">0 ₽/мес</span>
+        </div>
+        <div class="result-item total-row">
+            <span>Итоговый ежемесячный платеж:</span>
+            <span class="result-value" id="res-total-monthly" style="font-size: 18px;">0 ₽/мес</span>
         </div>
     </div>
-        <script>
-        const COOP_ANNUAL_RATE = 10;
-        const priceInput = document.getElementById('price');
-        const dpInput = document.getElementById('down-payment');
-        const termInput = document.getElementById('term');
-        const bankRateInput = document.getElementById('bank-rate');
-        const dpRubHint = document.getElementById('dp-rub-hint');
-        const coopPaymentText = document.getElementById('coop-payment');
-        const coopOverpaymentText = document.getElementById('coop-overpayment');
-        const bankBadgeRate = document.getElementById('bank-badge-rate');
-        const bankPaymentText = document.getElementById('bank-payment');
-        const bankOverpaymentText = document.getElementById('bank-overpayment');
-        const totalSavingText = document.getElementById('total-saving');
 
-        function formatCurrency(value) {
-            if (isNaN(value) || !isFinite(value) || value <= 0) return '0 ₽';
-            return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(value);
-        }
+    <div class="disclaimer">
+        Внутренний расчет потребительского кооператива. Не является финансовой услугой, займом или публичной офертой. Доступно только для членов (пайщиков) ПКСП «Решение» в рамках целевых потребительских программ по ФЗ № 3085-1 «О потребительской кооперации в Российской Федерации».
+    </div>
+</div>
+<script>
+    const propertyInput = document.getElementById('property-value');
+    const initialSelect = document.getElementById('initial-fee-pct');
+    const yearsSelect = document.getElementById('years');
 
-        function calculateAnnuitentPayment(loanAmount, annualRate, years) {
-            if (loanAmount <= 0 || years <= 0) return 0;
-            if (annualRate <= 0) return loanAmount / (years * 12);
-            const monthlyRate = annualRate / 12 / 100;
-            const totalMonths = years * 12;
-            return loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
-        }
+    const resInitial = document.getElementById('res-initial');
+    const resRemain = document.getElementById('res-remain');
+    const resMonthlyShare = document.getElementById('res-monthly-share');
+    const resMonthlyMembership = document.getElementById('res-monthly-membership');
+    const resTotalMonthly = document.getElementById('res-total-monthly');
 
-        function calculate() {
-            const price = Math.max(0, parseFloat(priceInput.value) || 0);
-            const dpPercent = Math.min(100, Math.max(0, parseFloat(dpInput.value) || 0));
-            const termYears = Math.max(0, parseFloat(termInput.value) || 0);
-            const bankAnnualRate = Math.max(0, parseFloat(bankRateInput.value) || 0);
+    // Начисляемый процент инвестора (10% годовых на остаток)
+    const INVESTOR_ANNUAL_PCT = 0.10; 
 
-            const dpRub = (price * dpPercent) / 100;
-            const loanAmount = price - dpRub;
+    function formatCurrency(num) {
+        return Math.round(num).toLocaleString('ru-RU') + ' ₽';
+    }
 
-            dpRubHint.textContent = formatCurrency(dpRub);
-            bankBadgeRate.textContent = `Ставка ${bankAnnualRate}%`;
+    function calculate() {
+        const propertyValue = parseFloat(propertyInput.value) || 0;
+        const initialPct = parseFloat(initialSelect.value);
+        const years = parseInt(yearsSelect.value);
+        const months = years * 12;
 
-            if (loanAmount <= 0 || termYears <= 0) {
-                coopPaymentText.textContent = '0 ₽';
-                coopOverpaymentText.textContent = '0 ₽';
-                bankPaymentText.textContent = '0 ₽';
-                bankOverpaymentText.textContent = '0 ₽';
-                totalSavingText.textContent = '0 ₽';
-                return;
-            }
+        // 1. Первоначальный взнос пайщика
+        const initialFee = propertyValue * (initialPct / 100);
+        
+        // 2. Остаток, который добавляет кооператив (деньги инвестора)
+        const remainValue = propertyValue - initialFee;
+        
+        // 3. Ежемесячный паевой взнос (чистый возврат добавленной стоимости без процентов)
+        const monthlyShare = months > 0 ? remainValue / months : 0;
+        
+        // 4. Ежемесячный членский взнос (сюда заложены 10% годовых для инвестора на добавленную сумму)
+        const totalInvestorProfit = remainValue * INVESTOR_ANNUAL_PCT * years;
+        const monthlyMembership = months > 0 ? totalInvestorProfit / months : 0;
+        
+        // 5. Итоговый платеж в месяц
+        const totalMonthly = monthlyShare + monthlyMembership;
 
-            const totalMonths = termYears * 12;
+        // Вывод результатов на экран
+        resInitial.textContent = formatCurrency(initialFee);
+        resRemain.textContent = formatCurrency(remainValue);
+        resMonthlyShare.textContent = formatCurrency(monthlyShare);
+        resMonthlyMembership.textContent = formatCurrency(monthlyMembership);
+        resTotalMonthly.textContent = formatCurrency(totalMonthly);
+    }
 
-            const coopMonthlyPayment = calculateAnnuitentPayment(loanAmount, COOP_ANNUAL_RATE, termYears);
-            const coopTotalPaid = coopMonthlyPayment * totalMonths;
-            const coopOverpayment = Math.max(0, coopTotalPaid - loanAmount);
+    // Слушатели для мгновенного пересчета при изменении пользователем параметров
+    propertyInput.addEventListener('input', calculate);
+    initialSelect.addEventListener('change', calculate);
+    yearsSelect.addEventListener('change', calculate);
 
-            const bankMonthlyPayment = calculateAnnuitentPayment(loanAmount, bankAnnualRate, termYears);
-            const bankTotalPaid = bankMonthlyPayment * totalMonths;
-            const bankOverpayment = Math.max(0, bankTotalPaid - loanAmount);
+    // Запуск расчета при открытии страницы
+    calculate();
+</script>
 
-            const totalSaving = Math.max(0, bankOverpayment - coopOverpayment);
-
-            coopPaymentText.textContent = formatCurrency(coopMonthlyPayment) + ' / мес.';
-            coopOverpaymentText.textContent = formatCurrency(coopOverpayment);
-            bankPaymentText.textContent = formatCurrency(bankMonthlyPayment) + ' / мес.';
-            bankOverpaymentText.textContent = formatCurrency(bankOverpayment);
-            totalSavingText.textContent = formatCurrency(totalSaving);
-        }
-
-        [priceInput, dpInput, termInput, bankRateInput].forEach(input => {
-            input.addEventListener('input', calculate);
-        });
-        calculate();
-    </script>
 </body>
 </html>
-
