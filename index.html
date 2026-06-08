@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аннуитетный Калькулятор ЦПП — ПКСП Решение</title>
+    <title>Калькулятор ЦПП — ПКСП Решение</title>
     <style>
         :root {
             --primary-color: #1a446c;
@@ -136,10 +136,7 @@
             <span>Объем программы (добавляет ПКСП):</span>
             <span class="result-value" id="res-remain" style="color: var(--accent-color);">0 ₽</span>
         </div>
-        <div class="result-item" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 10px;">
-            <span>Тип платежа для пайщика:</span>
-            <span class="result-value" style="color: var(--primary-color);">Фиксированный (Аннуитетный)</span>
-        </div>
+        
         <div class="result-item total-row">
             <span>Сводный ежемесячный взнос:</span>
             <span class="result-value" id="res-total-monthly" style="font-size: 18px;">0 ₽/мес</span>
@@ -183,11 +180,18 @@
         const years = parseInt(yearsInput.value) || 0;
         const months = years * 12;
 
-        // Сброс ошибок и стилей
+        // Сброс ошибок, стилей и старых динамических строк
         initialError.style.display = 'none';
         limitErrorHigh.style.display = 'none';
         limitErrorLow.style.display = 'none';
         resTotalMonthly.style.color = 'var(--primary-color)';
+
+        const oldShareRow = document.getElementById('dynamic-share-row');
+        const oldMemberRow = document.getElementById('dynamic-member-row');
+        const oldTotalFundRow = document.getElementById('dynamic-fund-row');
+        if (oldShareRow) oldShareRow.remove();
+        if (oldMemberRow) oldMemberRow.remove();
+        if (oldTotalFundRow) oldTotalFundRow.remove();
 
         // 1. Проверка минимального взноса в 20%
         const minInitialRequired = propertyValue * 0.20;
@@ -205,40 +209,72 @@
             return;
         }
 
-        // 3. СТРОГАЯ БАНКОВСКАЯ АННУИТЕТНАЯ ФОРМУЛА
-        // Формула: П = С * (М * (1 + М)^Н) / ((1 + М)^Н - 1)
-        // где С — сумма остатка, М — месячная ставка (10% / 12 месяцев), Н — количество месяцев
+        // 3. АННУИТЕТНЫЙ РАСЧЕТ ДЛЯ ОПРЕДЕЛЕНИЯ ОБЩЕЙ СУММЫ
         const monthlyRate = INVESTOR_ANNUAL_PCT / 12;
-        let totalMonthly = 0;
+        let totalMonthlyAnnuity = 0;
 
         if (monthlyRate === 0) {
-            totalMonthly = remainValue / months;
+            totalMonthlyAnnuity = remainValue / months;
         } else {
-            totalMonthly = remainValue * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+            totalMonthlyAnnuity = remainValue * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
         }
 
-        // Вывод результатов
-        resRemain.textContent = formatCurrency(remainValue);
-        resTotalMonthly.textContent = formatCurrency(totalMonthly) + '/мес';
+        // Всего будет выплачено за весь срок по аннуитету
+        const totalPaidOverTime = totalMonthlyAnnuity * months;
+        // Общий объем членских взносов за весь срок (общий итог фонда)
+        const totalMembershipProfit = totalPaidOverTime - remainValue;
 
-        // 4. Проверка жесткого коридора лимитов (40 000 - 70 000)
-        if (totalMonthly > MAX_MONTHLY_LIMIT) {
+        // 4. РАСПРЕДЕЛЕНИЕ НА ПОТОКИ ПО ЗАКОНУ № 3085-1
+        const monthlyPureShare = remainValue / months; // Пай в месяц
+        const monthlyMembershipFee = totalMembershipProfit / months; // Членский в месяц
+        const finalTotalMonthly = monthlyPureShare + monthlyMembershipFee; // Итого в месяц
+
+        // Вывод базовых результатов
+        resRemain.textContent = formatCurrency(remainValue);
+        resTotalMonthly.textContent = formatCurrency(finalTotalMonthly) + '/мес';
+
+        // Вставляем три раздельные строки прямо перед итоговым платежом
+        const totalRowElement = document.querySelector('.total-row');
+        
+        const shareRow = document.createElement('div');
+        shareRow.className = 'result-item';
+        shareRow.id = 'dynamic-share-row';
+        shareRow.innerHTML = `<span>Ежемесячный взнос в паевой фонд:</span><span class="result-value" style="color: #4a5568;">${formatCurrency(monthlyPureShare)}/мес</span>`;
+        
+        const memberRow = document.createElement('div');
+        memberRow.className = 'result-item';
+        memberRow.id = 'dynamic-member-row';
+        memberRow.innerHTML = `<span>Ежемесячный членский взнос за пользование:</span><span class="result-value" style="color: #4a5568;">${formatCurrency(monthlyMembershipFee)}/мес</span>`;
+
+        const totalFundRow = document.createElement('div');
+        totalFundRow.className = 'result-item';
+        totalFundRow.id = 'dynamic-fund-row';
+        totalFundRow.style.borderTop = '1px dashed #cbd5e1';
+        totalFundRow.style.paddingTop = '10px';
+        totalFundRow.style.marginTop = '10px';
+        totalFundRow.innerHTML = `<span>Фонд уставных расходов ПКСП (общий итог):</span><span class="result-value" style="color: #4a5568;">${formatCurrency(totalMembershipProfit)}</span>`;
+
+        totalRowElement.parentNode.insertBefore(shareRow, totalRowElement);
+        totalRowElement.parentNode.insertBefore(memberRow, totalRowElement);
+        totalRowElement.parentNode.insertBefore(totalFundRow, totalRowElement);
+
+        // 5. Проверка жесткого коридора лимитов (40 000 - 70 000)
+        if (finalTotalMonthly > MAX_MONTHLY_LIMIT) {
             limitErrorHigh.style.display = 'block';
             resTotalMonthly.style.color = 'var(--error-color)';
-        } else if (totalMonthly < MIN_MONTHLY_LIMIT) {
+        } else if (finalTotalMonthly < MIN_MONTHLY_LIMIT) {
             limitErrorLow.style.display = 'block';
             resTotalMonthly.style.color = 'var(--error-color)';
         }
     }
 
-    // Слушатели для автоматического пересчета
     propertyInput.addEventListener('input', calculate);
     initialInput.addEventListener('input', calculate);
     yearsInput.addEventListener('input', calculate);
 
-    // Первый расчет при загрузке страницы
     calculate();
 </script>
 
 </body>
 </html>
+
