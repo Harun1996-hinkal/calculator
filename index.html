@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор ЦПП — ПКСП Решение</title>
+    <title>Аннуитетный Калькулятор ЦПП — ПКСП Решение</title>
     <style>
         :root {
             --primary-color: #1a446c;
@@ -117,18 +117,18 @@
     
     <div class="form-group">
         <label for="property-value">Стоимость имущества/недвижимости (₽)</label>
-        <input type="number" id="property-value" value="3000000" step="50000">
+        <input type="number" id="property-value" value="3500000" step="50000">
     </div>
 
     <div class="form-group">
         <label for="initial-fee">Ваш первоначальный паевой взнос (₽)</label>
-        <input type="number" id="initial-fee" value="600000" step="50000">
+        <input type="number" id="initial-fee" value="700000" step="50000">
         <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 20% от стоимости</div>
     </div>
 
     <div class="form-group">
         <label for="years">Желаемый срок программы (лет)</label>
-        <input type="number" id="years" value="5" min="1" max="15">
+        <input type="number" id="years" value="7" min="1" max="15">
     </div>
 
     <div class="result-box">
@@ -137,15 +137,11 @@
             <span class="result-value" id="res-remain" style="color: var(--accent-color);">0 ₽</span>
         </div>
         <div class="result-item" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 10px;">
-            <span>Ежемесячный взнос в паевой фонд:</span>
-            <span class="result-value" id="res-monthly-share">0 ₽/мес</span>
-        </div>
-        <div class="result-item">
-            <span>Ежемесячный членский взнос:</span>
-            <span class="result-value" id="res-monthly-membership">0 ₽/мес</span>
+            <span>Тип платежа для пайщика:</span>
+            <span class="result-value" style="color: var(--primary-color);">Фиксированный (Аннуитетный)</span>
         </div>
         <div class="result-item total-row">
-            <span>Итоговый ежемесячный платеж:</span>
+            <span>Сводный ежемесячный взнос:</span>
             <span class="result-value" id="res-total-monthly" style="font-size: 18px;">0 ₽/мес</span>
         </div>
         <div id="limit-error-high" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
@@ -157,7 +153,7 @@
     </div>
 
     <div class="disclaimer">
-        Внутренний расчет потребительского кооператива. Не является финансовой услугой, займом или публичной офертой. Доступно только для членов (пайщиков) ПКСП «Решение» в рамках целевых потребительских программ по ФЗ № 3085-1 «О потребительской кооперации в Российской Федерации».
+        Внутренний расчет потребительского кооператива. Не является финансовой услугой, займом или публичной офертой. Расчет взносов производится по уставному графику снижения паевой задолженности. Доступно только для членов (пайщиков) ПКСП «Решение» в рамках целевых потребительских программ по ФЗ № 3085-1.
     </div>
 </div>
 <script>
@@ -166,16 +162,14 @@
     const yearsInput = document.getElementById('years');
 
     const resRemain = document.getElementById('res-remain');
-    const resMonthlyShare = document.getElementById('res-monthly-share');
-    const resMonthlyMembership = document.getElementById('res-monthly-membership');
     const resTotalMonthly = document.getElementById('res-total-monthly');
     
     const initialError = document.getElementById('initial-error');
     const limitErrorHigh = document.getElementById('limit-error-high');
     const limitErrorLow = document.getElementById('limit-error-low');
 
-    // Начисляемый процент инвестора (10% годовых на остаток)
-    const INVESTOR_ANNUAL_PCT = 0.10; 
+    // Жесткие параметры бизнес-модели
+    const INVESTOR_ANNUAL_PCT = 0.10; // 10% годовых для инвестора на остаток
     const MIN_MONTHLY_LIMIT = 40000;
     const MAX_MONTHLY_LIMIT = 70000;
 
@@ -202,30 +196,32 @@
             initialError.textContent = `Минимальный взнос должен быть не менее 20% (${formatCurrency(minInitialRequired)})`;
         }
 
-        // 2. Расчет остатка, который добавляет кооператив
+        // 2. Расчет остатка (сколько добавляет инвестор)
         const remainValue = propertyValue - initialFee;
         
         if (remainValue < 0 || months <= 0 || propertyValue <= 0) {
             resRemain.textContent = '0 ₽';
-            resMonthlyShare.textContent = '0 ₽/мес';
-            resMonthlyMembership.textContent = '0 ₽/мес';
             resTotalMonthly.textContent = '0 ₽/мес';
             return;
         }
 
-        // 3. Расчет платежей
-        const monthlyShare = remainValue / months;
-        const totalInvestorProfit = remainValue * INVESTOR_ANNUAL_PCT * years;
-        const monthlyMembership = totalInvestorProfit / months;
-        const totalMonthly = monthlyShare + monthlyMembership;
+        // 3. СТРОГАЯ БАНКОВСКАЯ АННУИТЕТНАЯ ФОРМУЛА
+        // Формула: П = С * (М * (1 + М)^Н) / ((1 + М)^Н - 1)
+        // где С — сумма остатка, М — месячная ставка (10% / 12 месяцев), Н — количество месяцев
+        const monthlyRate = INVESTOR_ANNUAL_PCT / 12;
+        let totalMonthly = 0;
+
+        if (monthlyRate === 0) {
+            totalMonthly = remainValue / months;
+        } else {
+            totalMonthly = remainValue * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+        }
 
         // Вывод результатов
         resRemain.textContent = formatCurrency(remainValue);
-        resMonthlyShare.textContent = formatCurrency(monthlyShare);
-        resMonthlyMembership.textContent = formatCurrency(monthlyMembership);
         resTotalMonthly.textContent = formatCurrency(totalMonthly) + '/мес';
 
-        // 4. Проверка рамок коридора платежа (40к - 70к)
+        // 4. Проверка жесткого коридора лимитов (40 000 - 70 000)
         if (totalMonthly > MAX_MONTHLY_LIMIT) {
             limitErrorHigh.style.display = 'block';
             resTotalMonthly.style.color = 'var(--error-color)';
@@ -240,7 +236,7 @@
     initialInput.addEventListener('input', calculate);
     yearsInput.addEventListener('input', calculate);
 
-    // Первый расчет
+    // Первый расчет при загрузке страницы
     calculate();
 </script>
 
