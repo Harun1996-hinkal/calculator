@@ -122,8 +122,8 @@
 
     <div class="form-group">
         <label for="initial-fee">Ваш первоначальный паевой взнос (₽)</label>
-        <input type="number" id="initial-fee" value="700000" step="50000">
-        <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 20% от стоимости</div>
+        <input type="number" id="initial-fee" value="1100000" step="50000">
+        <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 30% от стоимости</div>
     </div>
 
     <div class="form-group">
@@ -190,20 +190,20 @@
         const oldMemberRow = document.getElementById('dynamic-member-row');
         const oldTotalFundRow = document.getElementById('dynamic-fund-row');
         if (oldShareRow) oldShareRow.remove();
-        if (oldMemberRow) oldMemberRow.remove();
+        if (oldMemberRow) memberRow = oldMemberRow.remove();
         if (oldTotalFundRow) oldTotalFundRow.remove();
 
-        // 1. Проверка минимального взноса в 20%
-        const minInitialRequired = propertyValue * 0.20;
+        // 1. Проверка минимального взноса в 30%
+        const minInitialRequired = propertyValue * 0.30;
         if (initialFee < minInitialRequired && propertyValue > 0) {
             initialError.style.display = 'block';
-            initialError.textContent = `Минимальный взнос должен быть не менее 20% (${formatCurrency(minInitialRequired)})`;
+            initialError.textContent = `Минимальный взнос должен быть не менее 30% (${formatCurrency(minInitialRequired)})`;
         }
 
         // 2. Расчет остатка (сколько добавляет инвестор)
         const remainValue = propertyValue - initialFee;
         
-        if (remainValue < 0 || months <= 0 || propertyValue <= 0) {
+        if (initialFee < minInitialRequired || remainValue < 0 || months <= 0 || propertyValue <= 0) {
             resRemain.textContent = '0 ₽';
             resTotalMonthly.textContent = '0 ₽/мес';
             return;
@@ -274,7 +274,3 @@
 
     calculate();
 </script>
-
-</body>
-</html>
-
