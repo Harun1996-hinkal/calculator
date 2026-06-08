@@ -8,6 +8,7 @@
         :root {
             --primary-color: #1a446c;
             --accent-color: #2b7a78;
+            --error-color: #dc2626;
             --bg-color: #ffffff;
             --text-color: #2b2b2b;
         }
@@ -53,7 +54,7 @@
             font-size: 13px;
             color: #4a5568;
         }
-        input[type="number"], select {
+        input[type="number"] {
             width: 100%;
             padding: 12px;
             border: 1px solid #cbd5e1;
@@ -62,9 +63,16 @@
             font-size: 16px;
             background-color: #ffffff;
         }
-        input:focus, select:focus {
+        input:focus {
             outline: none;
             border-color: var(--primary-color);
+        }
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            font-weight: 600;
         }
         .result-box {
             background-color: #f1f5f9;
@@ -109,37 +117,23 @@
     
     <div class="form-group">
         <label for="property-value">Стоимость имущества/недвижимости (₽)</label>
-        <input type="number" id="property-value" value="5000000" step="100000" min="500000">
+        <input type="number" id="property-value" value="4000000" step="50000">
     </div>
 
     <div class="form-group">
-        <label for="initial-fee-pct">Первоначальный паевой взнос (мин. 20%)</label>
-        <select id="initial-fee-pct">
-            <option value="20">20% (Минимальный)</option>
-            <option value="30">30%</option>
-            <option value="40">40%</option>
-            <option value="50" selected>50%</option>
-            <option value="60">60%</option>
-        </select>
+        <label for="initial-fee">Ваш первоначальный паевой взнос (₽)</label>
+        <input type="number" id="initial-fee" value="1000000" step="50000">
+        <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 20% от стоимости</div>
     </div>
 
     <div class="form-group">
-        <label for="years">Срок программы (лет)</label>
-        <select id="years">
-            <option value="3">3 года</option>
-            <option value="5" selected>5 лет</option>
-            <option value="7">7 лет</option>
-            <option value="10">10 лет</option>
-        </select>
+        <label for="years">Желаемый срок программы (лет)</label>
+        <input type="number" id="years" value="5" min="1" max="15">
     </div>
 
     <div class="result-box">
         <div class="result-item">
-            <span>Ваш первоначальный паевой взнос:</span>
-            <span class="result-value" id="res-initial">0 ₽</span>
-        </div>
-        <div class="result-item">
-            <span>Добавляет Кооператив (Объем программы):</span>
+            <span>Объем программы (добавляет ПКСП):</span>
             <span class="result-value" id="res-remain" style="color: var(--accent-color);">0 ₽</span>
         </div>
         <div class="result-item" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 10px;">
@@ -154,6 +148,9 @@
             <span>Итоговый ежемесячный платеж:</span>
             <span class="result-value" id="res-total-monthly" style="font-size: 18px;">0 ₽/мес</span>
         </div>
+        <div id="limit-error" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
+            Внимание! Платеж превышает лимит 70 000 ₽/мес. Увеличьте срок программы или первоначальный взнос.
+        </div>
     </div>
 
     <div class="disclaimer">
@@ -162,17 +159,20 @@
 </div>
 <script>
     const propertyInput = document.getElementById('property-value');
-    const initialSelect = document.getElementById('initial-fee-pct');
-    const yearsSelect = document.getElementById('years');
+    const initialInput = document.getElementById('initial-fee');
+    const yearsInput = document.getElementById('years');
 
-    const resInitial = document.getElementById('res-initial');
     const resRemain = document.getElementById('res-remain');
     const resMonthlyShare = document.getElementById('res-monthly-share');
     const resMonthlyMembership = document.getElementById('res-monthly-membership');
     const resTotalMonthly = document.getElementById('res-total-monthly');
+    
+    const initialError = document.getElementById('initial-error');
+    const limitError = document.getElementById('limit-error');
 
     // Начисляемый процент инвестора (10% годовых на остаток)
     const INVESTOR_ANNUAL_PCT = 0.10; 
+    const MAX_MONTHLY_LIMIT = 70000;
 
     function formatCurrency(num) {
         return Math.round(num).toLocaleString('ru-RU') + ' ₽';
@@ -180,40 +180,58 @@
 
     function calculate() {
         const propertyValue = parseFloat(propertyInput.value) || 0;
-        const initialPct = parseFloat(initialSelect.value);
-        const years = parseInt(yearsSelect.value);
+        const initialFee = parseFloat(initialInput.value) || 0;
+        const years = parseInt(yearsInput.value) || 0;
         const months = years * 12;
 
-        // 1. Первоначальный взнос пайщика
-        const initialFee = propertyValue * (initialPct / 100);
-        
-        // 2. Остаток, который добавляет кооператив (деньги инвестора)
+        // Сброс ошибок и стилей
+        initialError.style.display = 'none';
+        limitError.style.display = 'none';
+        resTotalMonthly.style.color = 'var(--primary-color)';
+
+        // 1. Проверка минимального взноса в 20%
+        const minInitialRequired = propertyValue * 0.20;
+        if (initialFee < minInitialRequired && propertyValue > 0) {
+            initialError.style.display = 'block';
+            initialError.textContent = `Минимальный взнос должен быть не менее 20% (${formatCurrency(minInitialRequired)})`;
+        }
+
+        // 2. Расчет остатка, который добавляет кооператив
         const remainValue = propertyValue - initialFee;
         
-        // 3. Ежемесячный паевой взнос (чистый возврат добавленной стоимости без процентов)
-        const monthlyShare = months > 0 ? remainValue / months : 0;
-        
-        // 4. Ежемесячный членский взнос (сюда заложены 10% годовых для инвестора на добавленную сумму)
+        if (remainValue < 0 || months <= 0 || propertyValue <= 0) {
+            resRemain.textContent = '0 ₽';
+            resMonthlyShare.textContent = '0 ₽/мес';
+            resMonthlyMembership.textContent = '0 ₽/мес';
+            resTotalMonthly.textContent = '0 ₽/мес';
+            return;
+        }
+
+        // 3. Расчет платежей
+        const monthlyShare = remainValue / months;
         const totalInvestorProfit = remainValue * INVESTOR_ANNUAL_PCT * years;
-        const monthlyMembership = months > 0 ? totalInvestorProfit / months : 0;
-        
-        // 5. Итоговый платеж в месяц
+        const monthlyMembership = totalInvestorProfit / months;
         const totalMonthly = monthlyShare + monthlyMembership;
 
-        // Вывод результатов на экран
-        resInitial.textContent = formatCurrency(initialFee);
+        // Вывод результатов
         resRemain.textContent = formatCurrency(remainValue);
         resMonthlyShare.textContent = formatCurrency(monthlyShare);
         resMonthlyMembership.textContent = formatCurrency(monthlyMembership);
-        resTotalMonthly.textContent = formatCurrency(totalMonthly);
+        resTotalMonthly.textContent = formatCurrency(totalMonthly) + '/мес';
+
+        // 4. Проверка лимита в 70 000 рублей
+        if (totalMonthly > MAX_MONTHLY_LIMIT) {
+            limitError.style.display = 'block';
+            resTotalMonthly.style.color = 'var(--error-color)';
+        }
     }
 
-    // Слушатели для мгновенного пересчета при изменении пользователем параметров
+    // Слушатели для автоматического пересчета
     propertyInput.addEventListener('input', calculate);
-    initialSelect.addEventListener('change', calculate);
-    yearsSelect.addEventListener('change', calculate);
+    initialInput.addEventListener('input', calculate);
+    yearsInput.addEventListener('input', calculate);
 
-    // Запуск расчета при открытии страницы
+    // Первый расчет
     calculate();
 </script>
 
