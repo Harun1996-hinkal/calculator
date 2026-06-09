@@ -81,6 +81,9 @@
             border-radius: 0 8px 8px 0;
             margin-top: 22px;
         }
+        .result-box {
+            position: relative;
+        }
         .result-item {
             display: flex;
             justify-content: space-between;
@@ -117,18 +120,18 @@
     
     <div class="form-group">
         <label for="property-value">Стоимость имущества/недвижимости (₽)</label>
-        <input type="number" id="property-value" value="3500000" step="50000">
+        <input type="number" id="property-value" value="5000000" step="50000">
     </div>
 
     <div class="form-group">
         <label for="initial-fee">Ваш первоначальный паевой взнос (₽)</label>
-        <input type="number" id="initial-fee" value="1100000" step="50000">
+        <input type="number" id="initial-fee" value="1500000" step="50000">
         <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 30% от стоимости</div>
     </div>
 
     <div class="form-group">
         <label for="years">Желаемый срок программы (лет)</label>
-        <input type="number" id="years" value="7" min="1" max="15">
+        <input type="number" id="years" value="10" min="1" max="25">
     </div>
 
     <div class="result-box">
@@ -166,7 +169,7 @@
     const limitErrorLow = document.getElementById('limit-error-low');
 
     // Жесткие параметры бизнес-модели
-    const INVESTOR_ANNUAL_PCT = 0.10; // 10% годовых для инвестора на остаток
+    const INVESTOR_ANNUAL_PCT = 0.10; // 10% в год членский взнос за пользование от остатка пая
     const MIN_MONTHLY_LIMIT = 40000;
     const MAX_MONTHLY_LIMIT = 70000;
 
@@ -177,7 +180,14 @@
     function calculate() {
         const propertyValue = parseFloat(propertyInput.value) || 0;
         const initialFee = parseFloat(initialInput.value) || 0;
-        const years = parseInt(yearsInput.value) || 0;
+        let years = parseInt(yearsInput.value) || 0;
+
+        // Корректируем ограничение по сроку до 25 лет
+        if (years > 25) {
+            years = 25;
+            yearsInput.value = 25;
+        }
+        
         const months = years * 12;
 
         // Сброс ошибок, стилей и старых динамических строк
@@ -190,17 +200,17 @@
         const oldMemberRow = document.getElementById('dynamic-member-row');
         const oldTotalFundRow = document.getElementById('dynamic-fund-row');
         if (oldShareRow) oldShareRow.remove();
-        if (oldMemberRow) memberRow = oldMemberRow.remove();
+        if (oldMemberRow) oldMemberRow.remove();
         if (oldTotalFundRow) oldTotalFundRow.remove();
 
-        // 1. Проверка минимального взноса в 30%
+        // 1. Проверка минимального паевого взноса в 30%
         const minInitialRequired = propertyValue * 0.30;
         if (initialFee < minInitialRequired && propertyValue > 0) {
             initialError.style.display = 'block';
-            initialError.textContent = `Минимальный взнос должен быть не менее 30% (${formatCurrency(minInitialRequired)})`;
+            initialError.textContent = `Минимальный паевой взнос должен быть не менее 30% (${formatCurrency(minInitialRequired)})`;
         }
 
-        // 2. Расчет остатка (сколько добавляет инвестор)
+        // 2. Расчет остатка (сколько добавляет кооператив)
         const remainValue = propertyValue - initialFee;
         
         if (initialFee < minInitialRequired || remainValue < 0 || months <= 0 || propertyValue <= 0) {
@@ -268,9 +278,13 @@
         }
     }
 
+    // Слушатели событий для пересчета на лету
     propertyInput.addEventListener('input', calculate);
     initialInput.addEventListener('input', calculate);
     yearsInput.addEventListener('input', calculate);
 
+    // Первичный запуск расчета при загрузке страницы
     calculate();
 </script>
+</body>
+</html>
