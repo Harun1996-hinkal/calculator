@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор ЦПП — ПКСП Решение</title>
+
     <style>
         :root {
             --primary-color: #1a446c;
@@ -12,8 +13,10 @@
             --bg-color: #ffffff;
             --text-color: #2b2b2b;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -21,6 +24,7 @@
             display: flex;
             justify-content: center;
         }
+
         .calc-container {
             background: #ffffff;
             padding: 20px;
@@ -28,6 +32,7 @@
             width: 100%;
             box-sizing: border-box;
         }
+
         h2 {
             color: var(--primary-color);
             margin-top: 0;
@@ -35,6 +40,7 @@
             text-align: center;
             line-height: 1.3;
         }
+
         .subtitle {
             font-size: 13px;
             color: #666;
@@ -44,9 +50,11 @@
             font-weight: 600;
             letter-spacing: 0.5px;
         }
+
         .form-group {
             margin-bottom: 18px;
         }
+
         label {
             display: block;
             font-weight: 600;
@@ -54,6 +62,7 @@
             font-size: 13px;
             color: #4a5568;
         }
+
         input[type="number"] {
             width: 100%;
             padding: 12px;
@@ -63,10 +72,12 @@
             font-size: 16px;
             background-color: #ffffff;
         }
+
         input:focus {
             outline: none;
             border-color: var(--primary-color);
         }
+
         .error-message {
             color: var(--error-color);
             font-size: 12px;
@@ -74,35 +85,42 @@
             display: none;
             font-weight: 600;
         }
+
         .result-box {
             background-color: #f1f5f9;
             border-left: 4px solid var(--primary-color);
             padding: 18px;
             border-radius: 0 8px 8px 0;
             margin-top: 22px;
-        }
-        .result-box {
             position: relative;
         }
+
         .result-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 12px;
             font-size: 14px;
+            gap: 10px;
         }
+
         .result-item:last-child {
             margin-bottom: 0;
         }
+
         .result-value {
             font-weight: bold;
             color: var(--primary-color);
+            text-align: right;
+            white-space: nowrap;
         }
+
         .total-row {
             border-top: 1px solid #cbd5e1;
             padding-top: 12px;
             margin-top: 12px;
             font-weight: bold;
         }
+
         .disclaimer {
             font-size: 10.5px;
             color: #64748b;
@@ -112,179 +130,530 @@
         }
     </style>
 </head>
+
 <body>
 
 <div class="calc-container">
+
     <h2>Расчет участия в целевой программе</h2>
-    <div class="subtitle">ПКСП «РЕШЕНИЕ»</div>
-    
-    <div class="form-group">
-        <label for="property-value">Стоимость имущества/недвижимости (₽)</label>
-        <input type="number" id="property-value" value="5000000" step="50000">
+
+    <div class="subtitle">
+        ПКСП «РЕШЕНИЕ»
     </div>
 
     <div class="form-group">
-        <label for="initial-fee">Ваш первоначальный паевой взнос (₽)</label>
-        <input type="number" id="initial-fee" value="1500000" step="50000">
-        <div id="initial-error" class="error-message">Минимальный взнос должен быть не менее 30% от стоимости</div>
+        <label for="property-value">
+            Стоимость имущества/недвижимости (₽)
+        </label>
+
+        <input
+            type="number"
+            id="property-value"
+            value="5000000"
+            step="50000"
+        >
     </div>
 
     <div class="form-group">
-        <label for="years">Желаемый срок программы (лет)</label>
-        <input type="number" id="years" value="10" min="1" max="25">
+        <label for="initial-fee">
+            Ваш первоначальный паевой взнос (₽)
+        </label>
+
+        <input
+            type="number"
+            id="initial-fee"
+            value="2500000"
+            step="50000"
+        >
+
+        <div id="initial-error" class="error-message">
+            Минимальный взнос должен быть не менее 50% от стоимости
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="years">
+            Желаемый срок программы (лет)
+        </label>
+
+        <input
+            type="number"
+            id="years"
+            value="10"
+            min="1"
+            max="25"
+        >
     </div>
 
     <div class="result-box">
+
         <div class="result-item">
-            <span>Объем программы (добавляет ПКСП):</span>
-            <span class="result-value" id="res-remain" style="color: var(--accent-color);">0 ₽</span>
+            <span>
+                Объем программы (добавляет ПКСП):
+            </span>
+
+            <span
+                class="result-value"
+                id="res-remain"
+                style="color: var(--accent-color);"
+            >
+                0 ₽
+            </span>
         </div>
-        
+
         <div class="result-item total-row">
-            <span>Сводный ежемесячный взнос:</span>
-            <span class="result-value" id="res-total-monthly" style="font-size: 18px;">0 ₽/мес</span>
+
+            <span>
+                Ежемесячный платеж:
+            </span>
+
+            <span
+                class="result-value"
+                id="res-total-monthly"
+                style="font-size: 18px;"
+            >
+                0 ₽/мес
+            </span>
+
         </div>
-        <div id="limit-error-high" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
-            Внимание! Платеж превышает лимит 70 000 ₽/мес. Увеличьте срок программы или первоначальный взнос.
+
+        <div
+            id="limit-error-low"
+            class="error-message"
+            style="
+                text-align: center;
+                margin-top: 10px;
+                font-size: 13px;
+            "
+        >
+            Внимание! Платеж ниже минимального значения
+            50 000 ₽/мес. Уменьшите срок программы или
+            первоначальный взнос.
         </div>
-        <div id="limit-error-low" class="error-message" style="text-align: center; margin-top: 10px; font-size: 13px;">
-            Внимание! Платеж ниже лимита 40 000 ₽/мес. Уменьшите срок программы или первоначальный взнос.
-        </div>
+
     </div>
 
     <div class="disclaimer">
-        Внутренний расчет потребительского кооператива. Не является финансовой услугой, займом или публичной офертой. Расчет взносов производится по уставному графику снижения паевой задолженности. Доступно только для членов (пайщиков) ПКСП «Решение» в рамках целевых потребительских программ по ФЗ № 3085-1.
+        Внутренний расчет потребительского кооператива.
+        Не является финансовой услугой, займом или публичной офертой.
+        Расчет взносов производится по уставному графику снижения
+        паевой задолженности. Доступно только для членов (пайщиков)
+        ПКСП «Решение» в рамках целевых потребительских программ
+        по ФЗ № 3085-1.
     </div>
+
 </div>
-<script>
-    const propertyInput = document.getElementById('property-value');
-    const initialInput = document.getElementById('initial-fee');
-    const yearsInput = document.getElementById('years');
+    <script>
 
-    const resRemain = document.getElementById('res-remain');
-    const resTotalMonthly = document.getElementById('res-total-monthly');
-    
-    const initialError = document.getElementById('initial-error');
-    const limitErrorHigh = document.getElementById('limit-error-high');
-    const limitErrorLow = document.getElementById('limit-error-low');
+    const propertyInput =
+        document.getElementById('property-value');
 
-    // Жесткие параметры бизнес-модели
-    const INVESTOR_ANNUAL_PCT = 0.10; // 10% в год членский взнос за пользование от остатка пая
-    const MIN_MONTHLY_LIMIT = 40000;
-    const MAX_MONTHLY_LIMIT = 70000;
+    const initialInput =
+        document.getElementById('initial-fee');
+
+    const yearsInput =
+        document.getElementById('years');
+
+
+    const resRemain =
+        document.getElementById('res-remain');
+
+    const resTotalMonthly =
+        document.getElementById('res-total-monthly');
+
+
+    const initialError =
+        document.getElementById('initial-error');
+
+    const limitErrorLow =
+        document.getElementById('limit-error-low');
+
+
+    // Параметры бизнес-модели
+
+    // 10% годовых для расчета целевых членских взносов
+    const INVESTOR_ANNUAL_PCT = 0.10;
+
+    // Минимальный ежемесячный платеж
+    const MIN_MONTHLY_LIMIT = 50000;
+
 
     function formatCurrency(num) {
-        return Math.round(num).toLocaleString('ru-RU') + ' ₽';
+
+        return Math.round(num)
+            .toLocaleString('ru-RU') + ' ₽';
+
     }
+
 
     function calculate() {
-        const propertyValue = parseFloat(propertyInput.value) || 0;
-        const initialFee = parseFloat(initialInput.value) || 0;
-        let years = parseInt(yearsInput.value) || 0;
 
-        // Корректируем ограничение по сроку до 25 лет
+        const propertyValue =
+            parseFloat(propertyInput.value) || 0;
+
+        const initialFee =
+            parseFloat(initialInput.value) || 0;
+
+        let years =
+            parseInt(yearsInput.value) || 0;
+
+
+        // Максимальный срок программы — 25 лет
+
         if (years > 25) {
+
             years = 25;
+
             yearsInput.value = 25;
+
         }
-        
+
+
         const months = years * 12;
 
-        // Сброс ошибок, стилей и старых динамических строк
+
+        // Сбрасываем ошибки
+
         initialError.style.display = 'none';
-        limitErrorHigh.style.display = 'none';
+
         limitErrorLow.style.display = 'none';
-        resTotalMonthly.style.color = 'var(--primary-color)';
 
-        const oldShareRow = document.getElementById('dynamic-share-row');
-        const oldMemberRow = document.getElementById('dynamic-member-row');
-        const oldTotalFundRow = document.getElementById('dynamic-fund-row');
-        if (oldShareRow) oldShareRow.remove();
-        if (oldMemberRow) oldMemberRow.remove();
-        if (oldTotalFundRow) oldTotalFundRow.remove();
+        resTotalMonthly.style.color =
+            'var(--primary-color)';
 
-        // 1. Проверка минимального паевого взноса в 30%
-        const minInitialRequired = propertyValue * 0.30;
-        if (initialFee < minInitialRequired && propertyValue > 0) {
+
+        // Удаляем старые динамические строки
+
+        const oldShareRow =
+            document.getElementById(
+                'dynamic-share-row'
+            );
+
+        const oldMemberRow =
+            document.getElementById(
+                'dynamic-member-row'
+            );
+
+        const oldTotalFundRow =
+            document.getElementById(
+                'dynamic-fund-row'
+            );
+
+
+        if (oldShareRow) {
+            oldShareRow.remove();
+        }
+
+        if (oldMemberRow) {
+            oldMemberRow.remove();
+        }
+
+        if (oldTotalFundRow) {
+            oldTotalFundRow.remove();
+        }
+
+
+        // ==========================================
+        // 1. МИНИМАЛЬНЫЙ ПЕРВОНАЧАЛЬНЫЙ ПАЙ — 50%
+        // ==========================================
+
+        const minInitialRequired =
+            propertyValue * 0.50;
+
+
+        if (
+            initialFee < minInitialRequired &&
+            propertyValue > 0
+        ) {
+
             initialError.style.display = 'block';
-            initialError.textContent = `Минимальный паевой взнос должен быть не менее 30% (${formatCurrency(minInitialRequired)})`;
+
+            initialError.textContent =
+                `Минимальный паевой взнос должен быть не менее 50% (${formatCurrency(minInitialRequired)})`;
+
         }
 
-        // 2. Расчет остатка (сколько добавляет кооператив)
-        const remainValue = propertyValue - initialFee;
-        
-        if (initialFee < minInitialRequired || remainValue < 0 || months <= 0 || propertyValue <= 0) {
+
+        // ==========================================
+        // 2. РАСЧЕТ ОБЪЕМА ПРОГРАММЫ
+        // ==========================================
+
+        const remainValue =
+            propertyValue - initialFee;
+
+
+        // Проверка исходных данных
+
+        if (
+            initialFee < minInitialRequired ||
+            remainValue < 0 ||
+            months <= 0 ||
+            propertyValue <= 0
+        ) {
+
             resRemain.textContent = '0 ₽';
-            resTotalMonthly.textContent = '0 ₽/мес';
+
+            resTotalMonthly.textContent =
+                '0 ₽/мес';
+
             return;
+
         }
 
-        // 3. АННУИТЕТНЫЙ РАСЧЕТ ДЛЯ ОПРЕДЕЛЕНИЯ ОБЩЕЙ СУММЫ
-        const monthlyRate = INVESTOR_ANNUAL_PCT / 12;
+
+        // ==========================================
+        // 3. РАСЧЕТ ЕЖЕМЕСЯЧНОГО ПЛАТЕЖА
+        // ==========================================
+
+        const monthlyRate =
+            INVESTOR_ANNUAL_PCT / 12;
+
+
         let totalMonthlyAnnuity = 0;
 
+
         if (monthlyRate === 0) {
-            totalMonthlyAnnuity = remainValue / months;
+
+            totalMonthlyAnnuity =
+                remainValue / months;
+
         } else {
-            totalMonthlyAnnuity = remainValue * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+
+            totalMonthlyAnnuity =
+                remainValue *
+                (
+                    monthlyRate *
+                    Math.pow(
+                        1 + monthlyRate,
+                        months
+                    )
+                )
+                /
+                (
+                    Math.pow(
+                        1 + monthlyRate,
+                        months
+                    ) - 1
+                );
+
         }
 
-        // Всего будет выплачено за весь срок по аннуитету
-        const totalPaidOverTime = totalMonthlyAnnuity * months;
-        // Общий объем членских взносов за весь срок (общий итог фонда)
-        const totalMembershipProfit = totalPaidOverTime - remainValue;
 
-        // 4. РАСПРЕДЕЛЕНИЕ НА ПОТОКИ ПО ЗАКОНУ № 3085-1
-        const monthlyPureShare = remainValue / months; // Пай в месяц
-        const monthlyMembershipFee = totalMembershipProfit / months; // Членский в месяц
-        const finalTotalMonthly = monthlyPureShare + monthlyMembershipFee; // Итого в месяц
+        // Общая сумма платежей за весь срок
 
-        // Вывод базовых результатов
-        resRemain.textContent = formatCurrency(remainValue);
-        resTotalMonthly.textContent = formatCurrency(finalTotalMonthly) + '/мес';
+        const totalPaidOverTime =
+            totalMonthlyAnnuity * months;
 
-        // Вставляем три раздельные строки прямо перед итоговым платежом
-        const totalRowElement = document.querySelector('.total-row');
-        
-        const shareRow = document.createElement('div');
-        shareRow.className = 'result-item';
-        shareRow.id = 'dynamic-share-row';
-        shareRow.innerHTML = `<span>Ежемесячный взнос в паевой фонд:</span><span class="result-value" style="color: #4a5568;">${formatCurrency(monthlyPureShare)}/мес</span>`;
-        
-        const memberRow = document.createElement('div');
-        memberRow.className = 'result-item';
-        memberRow.id = 'dynamic-member-row';
-        memberRow.innerHTML = `<span>Ежемесячный членский взнос за пользование:</span><span class="result-value" style="color: #4a5568;">${formatCurrency(monthlyMembershipFee)}/мес</span>`;
 
-        const totalFundRow = document.createElement('div');
-        totalFundRow.className = 'result-item';
-        totalFundRow.id = 'dynamic-fund-row';
-        totalFundRow.style.borderTop = '1px dashed #cbd5e1';
-        totalFundRow.style.paddingTop = '10px';
-        totalFundRow.style.marginTop = '10px';
-        totalFundRow.innerHTML = `<span>Фонд уставных расходов ПКСП (общий итог):</span><span class="result-value" style="color: #4a5568;">${formatCurrency(totalMembershipProfit)}</span>`;
+        // Общая сумма целевых членских взносов
 
-        totalRowElement.parentNode.insertBefore(shareRow, totalRowElement);
-        totalRowElement.parentNode.insertBefore(memberRow, totalRowElement);
-        totalRowElement.parentNode.insertBefore(totalFundRow, totalRowElement);
+        const totalMembershipProfit =
+            totalPaidOverTime - remainValue;
 
-        // 5. Проверка жесткого коридора лимитов (40 000 - 70 000)
-        if (finalTotalMonthly > MAX_MONTHLY_LIMIT) {
-            limitErrorHigh.style.display = 'block';
-            resTotalMonthly.style.color = 'var(--error-color)';
-        } else if (finalTotalMonthly < MIN_MONTHLY_LIMIT) {
-            limitErrorLow.style.display = 'block';
-            resTotalMonthly.style.color = 'var(--error-color)';
+
+        // ==========================================
+        // 4. РАЗДЕЛЕНИЕ НА ДВА ВИДА ВЗНОСОВ
+        // ==========================================
+
+        // Ежемесячный взнос в паевой фонд
+
+        const monthlyPureShare =
+            remainValue / months;
+
+
+        // Ежемесячный целевой членский взнос
+
+        const monthlyMembershipFee =
+            totalMembershipProfit / months;
+
+
+        // Итоговый ежемесячный платеж
+
+        const finalTotalMonthly =
+            monthlyPureShare +
+            monthlyMembershipFee;
+
+
+        // ==========================================
+        // 5. ВЫВОД ОСНОВНЫХ РЕЗУЛЬТАТОВ
+        // ==========================================
+
+        resRemain.textContent =
+            formatCurrency(remainValue);
+
+
+        resTotalMonthly.textContent =
+            formatCurrency(finalTotalMonthly)
+            + '/мес';
+
+
+        // ==========================================
+        // 6. СОЗДАНИЕ ДОПОЛНИТЕЛЬНЫХ СТРОК
+        // ==========================================
+
+        const totalRowElement =
+            document.querySelector('.total-row');
+
+
+        // Ежемесячный взнос в паевой фонд
+
+        const shareRow =
+            document.createElement('div');
+
+        shareRow.className =
+            'result-item';
+
+        shareRow.id =
+            'dynamic-share-row';
+
+
+        shareRow.innerHTML = `
+            <span>
+                Ежемесячный взнос в паевой фонд:
+            </span>
+
+            <span
+                class="result-value"
+                style="color: #4a5568;"
+            >
+                ${formatCurrency(monthlyPureShare)}/мес
+            </span>
+        `;
+
+
+        // Ежемесячный целевой членский взнос
+
+        const memberRow =
+            document.createElement('div');
+
+        memberRow.className =
+            'result-item';
+
+        memberRow.id =
+            'dynamic-member-row';
+
+
+        memberRow.innerHTML = `
+            <span>
+                Ежемесячный целевой членский взнос:
+            </span>
+
+            <span
+                class="result-value"
+                style="color: #4a5568;"
+            >
+                ${formatCurrency(monthlyMembershipFee)}/мес
+            </span>
+        `;
+
+
+        // Общая сумма целевых членских взносов
+
+        const totalFundRow =
+            document.createElement('div');
+
+        totalFundRow.className =
+            'result-item';
+
+        totalFundRow.id =
+            'dynamic-fund-row';
+
+
+        totalFundRow.style.borderTop =
+            '1px dashed #cbd5e1';
+
+        totalFundRow.style.paddingTop =
+            '10px';
+
+        totalFundRow.style.marginTop =
+            '10px';
+
+
+        totalFundRow.innerHTML = `
+            <span>
+                Общая сумма целевых членских взносов:
+            </span>
+
+            <span
+                class="result-value"
+                style="color: #4a5568;"
+            >
+                ${formatCurrency(totalMembershipProfit)}
+            </span>
+        `;
+
+
+        // Добавляем строки перед итоговым платежом
+
+        totalRowElement.parentNode.insertBefore(
+            shareRow,
+            totalRowElement
+        );
+
+
+        totalRowElement.parentNode.insertBefore(
+            memberRow,
+            totalRowElement
+        );
+
+
+        totalRowElement.parentNode.insertBefore(
+            totalFundRow,
+            totalRowElement
+        );
+                // ==========================================
+        // 7. ПРОВЕРКА МИНИМАЛЬНОГО ПЛАТЕЖА
+        // ==========================================
+
+        // Верхнего ограничения больше нет.
+        // Проверяется только минимум 50 000 ₽.
+
+        if (
+            finalTotalMonthly <
+            MIN_MONTHLY_LIMIT
+        ) {
+
+            limitErrorLow.style.display =
+                'block';
+
+            resTotalMonthly.style.color =
+                'var(--error-color)';
+
         }
+
+
     }
 
-    // Слушатели событий для пересчета на лету
-    propertyInput.addEventListener('input', calculate);
-    initialInput.addEventListener('input', calculate);
-    yearsInput.addEventListener('input', calculate);
 
-    // Первичный запуск расчета при загрузке страницы
+    // ==========================================
+    // ПЕРЕСЧЕТ ПРИ ИЗМЕНЕНИИ ДАННЫХ
+    // ==========================================
+
+    propertyInput.addEventListener(
+        'input',
+        calculate
+    );
+
+
+    initialInput.addEventListener(
+        'input',
+        calculate
+    );
+
+
+    yearsInput.addEventListener(
+        'input',
+        calculate
+    );
+
+
+    // ==========================================
+    // ПЕРВИЧНЫЙ ЗАПУСК
+    // ==========================================
+
     calculate();
+
 </script>
+
 </body>
 </html>
